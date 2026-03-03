@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MoodMatch — Fleek Vendor Finder</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink:       #f472b6;
+      --pink-light: #fce7f3;
+      --pink-mid:   #fbcfe8;
+      --blue:       #93c5fd;
+      --blue-light: #eff6ff;
+      --blue-mid:   #bfdbfe;
+      --purple:     #c4b5fd;
+      --bg:         #fafafa;
+      --white:      #ffffff;
+      --text:       #1a1a1a;
+      --muted:      #9ca3af;
+      --border:     #f0e6f6;
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .logo-star { color: var(--pink); font-size: 18px; }
+    .logo span { color: var(--pink); }
+
+    .fleek-badge {
+      font-size: 11px;
+      background: var(--pink-light);
+      color: var(--pink);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #fff0f8 0%, #eff6ff 50%, #f5f0ff 100%);
+      padding: 56px 24px 48px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '✦';
+      position: absolute; top: 20px; left: 8%;
+      font-size: 24px; color: var(--pink); opacity: 0.4;
+      animation: float 3s ease-in-out infinite;
+    }
+    .hero::after {
+      content: '✦';
+      position: absolute; bottom: 20px; right: 10%;
+      font-size: 18px; color: var(--blue); opacity: 0.5;
+      animation: float 4s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-8px); }
+    }
+
+    .hero-sparkles {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: var(--pink);
+      letter-spacing: 4px;
+    }
+
+    h1 {
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    h1 .grad {
+      background: linear-gradient(90deg, var(--pink), var(--purple), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    /* ── Main layout ── */
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 12px rgba(244, 114, 182, 0.06);
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--pink);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 7px;
+    }
+
+    input[type="text"], input[type="url"], textarea, select {
+      width: 100%;
+      background: #fafafa;
+      border: 1.5px solid #f0e6f6;
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 14px;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-family: inherit;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 3px rgba(244,114,182,0.1);
+      background: white;
+    }
+
+    textarea { resize: vertical; min-height: 72px; }
+
+    .field { margin-bottom: 18px; }
+    .field:last-child { margin-bottom: 0; }
+
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
+
+    /* ── Upload zone ── */
+    .upload-zone {
+      border: 2px dashed var(--pink-mid);
+      border-radius: 16px;
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--pink-light);
+      position: relative;
+    }
+
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--pink);
+      background: #fde8f4;
+    }
+
+    .upload-zone input[type="file"] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer;
+      width: 100%; height: 100%;
+      border: none; padding: 0; background: none;
+    }
+
+    .upload-icon { font-size: 32px; margin-bottom: 10px; }
+
+    .upload-zone p {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--pink);
+      margin-bottom: 4px;
+    }
+
+    .upload-zone small { color: var(--muted); font-size: 12px; }
+
+    /* ── Image previews ── */
+    .preview-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .preview-item {
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+
+    .preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid var(--pink-mid);
+    }
+
+    .preview-remove {
+      position: absolute;
+      top: -6px; right: -6px;
+      background: var(--pink);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px; height: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    /* ── OR divider ── */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 16px 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .or-divider::before, .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── URL row ── */
+    .url-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .url-row input { flex: 1; margin: 0; }
+
+    .btn-remove {
+      background: var(--pink-light);
+      border: none;
+      border-radius: 8px;
+      color: var(--pink);
+      cursor: pointer;
+      font-size: 16px;
+      width: 38px; height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+
+    .btn-remove:hover { background: var(--pink-mid); }
+
+    .btn-add-url {
+      background: none;
+      border: 1.5px dashed var(--pink-mid);
+      border-radius: 10px;
+      color: var(--pink);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 16px;
+      margin-top: 4px;
+      transition: all 0.2s;
+      width: 100%;
+      font-family: inherit;
+    }
+
+    .btn-add-url:hover { background: var(--pink-light); border-color: var(--pink); }
+
+    /* ── Submit button ── */
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--pink), #e879f9);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-family: inherit;
+      letter-spacing: 0.2px;
+      box-shadow: 0 4px 20px rgba(244,114,182,0.35);
+      margin-top: 4px;
+    }
+
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(244,114,182,0.45); }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-submit:disabled {
+      background: #e5e7eb;
+      color: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* ── Results ── */
+    #results { display: none; margin-top: 28px; }
+
+    .loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 20px;
+      gap: 16px;
+    }
+
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--pink-mid);
+      border-top-color: var(--pink);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader p { color: var(--muted); font-size: 14px; }
+
+    /* ── Style summary chips ── */
+    .style-summary {
+      background: linear-gradient(135deg, var(--pink-light), var(--blue-light));
+      border: 1.5px solid var(--pink-mid);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .style-summary-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--pink);
+      width: 100%;
+      margin-bottom: 4px;
+    }
+
+    .chip {
+      background: white;
+      border: 1.5px solid var(--pink-mid);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .chip strong { color: var(--text); }
+
+    /* ── Vendor cards ── */
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .results-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .results-meta { font-size: 12px; color: var(--muted); }
+
+    .vendor-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .vendor-card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+
+    .vendor-card:hover {
+      border-color: var(--pink-mid);
+      box-shadow: 0 4px 16px rgba(244,114,182,0.1);
+    }
+
+    .rank-badge {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .rank-1 { background: linear-gradient(135deg,#fce7f3,#fbcfe8); color: var(--pink); }
+    .rank-2 { background: linear-gradient(135deg,#eff6ff,#bfdbfe); color: #3b82f6; }
+    .rank-3 { background: linear-gradient(135deg,#f5f3ff,#ddd6fe); color: #7c3aed; }
+    .rank-other { background: #f9fafb; color: #9ca3af; }
+
+    .vendor-info { flex: 1; min-width: 0; }
+
+    .vendor-name {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .vendor-handle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .vendor-why {
+      font-size: 12px;
+      color: #9ca3af;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .vendor-right { text-align: right; flex-shrink: 0; }
+
+    .score {
+      background: linear-gradient(135deg, var(--pink-light), var(--blue-light));
+      border: 1.5px solid var(--pink-mid);
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--pink);
+      margin-bottom: 4px;
+    }
+
+    .origin { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .products { font-size: 11px; color: #d1d5db; margin-top: 2px; }
+
+    .error-box {
+      background: #fff5f5;
+      border: 1.5px solid #fecaca;
+      border-radius: 14px;
+      padding: 20px;
+      color: #ef4444;
+      font-size: 14px;
+    }
+
+    .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .hint a { color: var(--pink); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-star">✦</span>
+    Mood<span>Match</span>
+  </div>
+  <div class="fleek-badge">by Fleek</div>
+</header>
+
+<div class="hero">
+  <div class="hero-sparkles">✦ &nbsp; ✦ &nbsp; ✦</div>
+  <h1>Find your <span class="grad">perfect vendors</span></h1>
+  <p style="margin-top:10px">Upload a moodboard or paste image links — get matched vendors from the Fleek catalog instantly.</p>
+</div>
+
+<div class="container">
+
+  <!-- Image Upload -->
+  <div class="card">
+    <div class="card-title">✦ Upload Images</div>
+
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" id="fileInput" accept="image/*" multiple />
+      <div class="upload-icon">🖼️</div>
+      <p>Drop images here or click to upload</p>
+      <small>JPG, PNG, WEBP — up to 8 images</small>
+    </div>
+
+    <div class="preview-grid" id="previewGrid"></div>
+
+    <div class="or-divider">or paste a URL</div>
+
+    <div id="urlList">
+      <div class="url-row">
+        <input type="url" class="img-url-input" placeholder="https://i.pinimg.com/... or any image URL" />
+        <button class="btn-remove" onclick="removeUrlRow(this)">×</button>
+      </div>
+    </div>
+    <button class="btn-add-url" onclick="addUrlRow()">+ Add another URL</button>
+    <p class="hint">Tip: right-click any Pinterest image → <strong>Copy image address</strong></p>
+  </div>
+
+  <!-- Details -->
+  <div class="card">
+    <div class="card-title">✦ Details</div>
+    <div class="row">
+      <div class="field">
+        <label>Buyer Name</label>
+        <input type="text" id="buyerName" placeholder="e.g. Sarah from NYC" />
+      </div>
+      <div class="field">
+        <label>Vendors to return</label>
+        <select id="maxVendors">
+          <option value="3">Top 3</option>
+          <option value="5" selected>Top 5</option>
+          <option value="8">Top 8</option>
+          <option value="10">Top 10</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Style Description <span style="font-weight:400;text-transform:none">(optional)</span></label>
+      <textarea id="description" placeholder="e.g. Y2K glam, velour tracksuits, Juicy Couture vibes, 2000s mall girl..."></textarea>
+    </div>
+  </div>
+
+  <button class="btn-submit" id="submitBtn" onclick="runMatcher()">
+    ✦ &nbsp; Find Matching Vendors
+  </button>
+
+  <!-- Results -->
+  <div id="results">
+    <div class="loader" id="loader">
+      <div class="spinner"></div>
+      <p>Analysing style & matching vendors...</p>
+    </div>
+    <div id="resultsContent"></div>
+  </div>
+
+</div>
+
+<script>
+  // ── CONFIG — swap to /webhook/ (remove -test) after publishing in n8n ──
+  const WEBHOOK_URL = 'https://n8n.joinfleek.com/webhook-test/vendor-matcher';
+
+  // ── Uploaded files (base64) ────────────────────────────────────────────
+  let uploadedImages = []; // { name, dataUrl }
+
+  const uploadZone = document.getElementById('uploadZone');
+  const fileInput  = document.getElementById('fileInput');
+  const previewGrid = document.getElementById('previewGrid');
+
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+    handleFiles([...e.dataTransfer.files]);
+  });
+
+  fileInput.addEventListener('change', () => handleFiles([...fileInput.files]));
+
+  function handleFiles(files) {
+    const imageFiles = files.filter(f => f.type.startsWith('image/')).slice(0, 8 - uploadedImages.length);
+    imageFiles.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        uploadedImages.push({ name: file.name, dataUrl: e.target.result });
+        renderPreviews();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderPreviews() {
+    previewGrid.innerHTML = uploadedImages.map((img, i) => `
+      <div class="preview-item">
+        <img src="${img.dataUrl}" alt="${img.name}" />
+        <button class="preview-remove" onclick="removeImage(${i})">×</button>
+      </div>
+    `).join('');
+  }
+
+  function removeImage(i) {
+    uploadedImages.splice(i, 1);
+    renderPreviews();
+  }
+
+  // ── URL inputs ─────────────────────────────────────────────────────────
+  function addUrlRow() {
+    const row = document.createElement('div');
+    row.className = 'url-row';
+    row.innerHTML = `
+      <input type="url" class="img-url-input" placeholder="https://i.pinimg.com/..." />
+      <button class="btn-remove" onclick="removeUrlRow(this)">×</button>
+    `;
+    document.getElementById('urlList').appendChild(row);
+    row.querySelector('input').focus();
+  }
+
+  function removeUrlRow(btn) {
+    const list = document.getElementById('urlList');
+    if (list.children.length === 1) { btn.previousElementSibling.value = ''; return; }
+    btn.parentElement.remove();
+  }
+
+  function getUrlInputs() {
+    return [...document.querySelectorAll('.img-url-input')]
+      .map(i => i.value.trim()).filter(Boolean);
+  }
+
+  // ── Run ────────────────────────────────────────────────────────────────
+  async function runMatcher() {
+    const urlImages   = getUrlInputs();
+    const description = document.getElementById('description').value.trim();
+    const buyerName   = document.getElementById('buyerName').value.trim() || 'Buyer';
+    const maxVendors  = parseInt(document.getElementById('maxVendors').value);
+
+    if (uploadedImages.length === 0 && urlImages.length === 0 && !description) {
+      alert('Please upload an image, paste a URL, or add a style description ✦');
+      return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Matching...';
+
+    const results = document.getElementById('results');
+    const loader  = document.getElementById('loader');
+    const content = document.getElementById('resultsContent');
+    results.style.display = 'block';
+    loader.style.display  = 'flex';
+    content.innerHTML     = '';
+    results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Combine uploaded (base64 dataUrls) + pasted URLs into one array
+    const imageUrls = [
+      ...uploadedImages.map(img => img.dataUrl),
+      ...urlImages
+    ].slice(0, 8);
+
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrls, description, buyerName, maxVendors })
+      });
+      if (!res.ok) throw new Error(`Error ${res.status} — check n8n workflow is active`);
+      const data = await res.json();
+      loader.style.display = 'none';
+      renderResults(data, buyerName);
+    } catch (err) {
+      loader.style.display = 'none';
+      content.innerHTML = `<div class="error-box">⚠️ ${err.message}</div>`;
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '✦ &nbsp; Find Matching Vendors';
+  }
+
+  // ── Render results ─────────────────────────────────────────────────────
+  function renderResults(data, buyerName) {
+    const content = document.getElementById('resultsContent');
+    const s = data.style_summary || {};
+    const vendors = data.vendor_shortlist || [];
+
+    const chips = [
+      s.era        && `<div class="chip"><strong>Era</strong> ${s.era}</div>`,
+      s.aesthetic  && `<div class="chip"><strong>Aesthetic</strong> ${s.aesthetic}</div>`,
+      s.categories && `<div class="chip"><strong>Categories</strong> ${s.categories}</div>`,
+      s.gender     && `<div class="chip"><strong>Gender</strong> ${s.gender}</div>`,
+      s.key_brands && s.key_brands !== 'none identified' && `<div class="chip"><strong>Brands</strong> ${s.key_brands}</div>`,
+    ].filter(Boolean).join('');
+
+    const rankClass = i => i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-other';
+
+    const vendorCards = vendors.map((v, i) => `
+      <div class="vendor-card">
+        <div class="rank-badge ${rankClass(i)}">#${v.rank}</div>
+        <div class="vendor-info">
+          <div class="vendor-name">${v.vendor_name || v.vendor_handle}</div>
+          <div class="vendor-handle">@${v.vendor_handle}</div>
+          <div class="vendor-why">✦ ${v.why}</div>
+        </div>
+        <div class="vendor-right">
+          <div class="score">${v.match_score} pts</div>
+          <div class="origin">${v.origin || '—'}</div>
+          <div class="products">${v.active_products} products</div>
+        </div>
+      </div>
+    `).join('');
+
+    content.innerHTML = `
+      ${chips ? `<div class="style-summary"><div class="style-summary-label">✦ Style Analysis</div>${chips}</div>` : ''}
+      <div class="results-header">
+        <h2>Matches for ${data.buyer || buyerName}</h2>
+        <span class="results-meta">${data.vendors_analyzed || 0} vendors scanned</span>
+      </div>
+      <div class="vendor-list">
+        ${vendorCards || '<p style="text-align:center;color:#9ca3af;padding:40px">No matches — try adding more images or a description.</p>'}
+      </div>
+      <p style="font-size:11px;color:#d1d5db;text-align:center;margin-top:20px">
+        ${new Date(data.generated_at || Date.now()).toLocaleString()}
+      </p>
+    `;
+  }
+</script>
+</body>
+</html>
