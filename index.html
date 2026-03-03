@@ -283,7 +283,45 @@
       background: var(--border);
     }
 
-    /* ── URL row ── */
+    /* ── Links section ── */
+    .links-section {
+      margin-top: 18px;
+    }
+
+    .links-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--pink);
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    .url-textarea {
+      width: 100%;
+      min-height: 110px;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      line-height: 1.6;
+      resize: vertical;
+      box-sizing: border-box;
+      transition: border-color .2s;
+    }
+
+    .url-textarea:focus {
+      outline: none;
+      border-color: var(--pink);
+      box-shadow: 0 0 0 3px rgba(255,105,180,.12);
+    }
+
+    .url-textarea::placeholder { color: var(--muted); }
+
+    /* ── URL row (legacy, kept for safety) ── */
     .url-row {
       display: flex;
       gap: 8px;
@@ -513,6 +551,42 @@
 
     .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
     .hint a { color: var(--pink); text-decoration: none; }
+
+    /* ── Input mode tabs (legacy) ── */
+    .mode-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .mode-tab {
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #fafafa;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .mode-tab .tab-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+
+    .mode-tab:hover { border-color: var(--pink-mid); color: var(--text); }
+
+    .mode-tab.active {
+      border-color: var(--pink);
+      background: var(--pink-light);
+      color: var(--pink);
+      box-shadow: 0 0 0 3px rgba(244,114,182,0.1);
+    }
+
+    .mode-panel { display: none; }
+    .mode-panel.active { display: block; }
   </style>
 </head>
 <body>
@@ -527,35 +601,31 @@
 
 <div class="hero">
   <div class="hero-sparkles">✦ &nbsp; ✦ &nbsp; ✦</div>
-  <h1>Find your <span class="grad">perfect vendors</span></h1>
-  <p style="margin-top:10px">Upload a moodboard or paste image links — get matched vendors from the Fleek catalog instantly.</p>
+  <h1>Find your <span class="grad">perfect vendors!</span></h1>
+  <p style="margin-top:10px">Mood Match is your new Y2K bestie :)</p>
+  <p style="margin-top:6px">Upload a moodboard or paste image links — get matched vendors from the Fleek Womenswear catalog instantly.</p>
 </div>
 
 <div class="container">
 
-  <!-- Image Upload -->
+  <!-- Image Input -->
   <div class="card">
-    <div class="card-title">✦ Upload Images</div>
+    <div class="card-title">✦ Your Moodboard</div>
 
+    <!-- Drop zone (always visible) -->
     <div class="upload-zone" id="uploadZone">
       <input type="file" id="fileInput" accept="image/*" multiple />
       <div class="upload-icon">🖼️</div>
       <p>Drop images here or click to upload</p>
       <small>JPG, PNG, WEBP — up to 8 images</small>
     </div>
-
     <div class="preview-grid" id="previewGrid"></div>
 
-    <div class="or-divider">or paste a URL</div>
-
-    <div id="urlList">
-      <div class="url-row">
-        <input type="url" class="img-url-input" placeholder="https://i.pinimg.com/... or any image URL" />
-        <button class="btn-remove" onclick="removeUrlRow(this)">×</button>
-      </div>
+    <!-- Links section -->
+    <div class="links-section">
+      <label class="links-label">🔗 Or paste image links</label>
+      <textarea id="urlTextarea" class="url-textarea" placeholder="Paste image URLs here, one per line&#10;&#10;e.g. https://i.pinimg.com/...&#10;     https://i.pinimg.com/...&#10;&#10;Tip: right-click a Pinterest image → Copy image address"></textarea>
     </div>
-    <button class="btn-add-url" onclick="addUrlRow()">+ Add another URL</button>
-    <p class="hint">Tip: right-click any Pinterest image → <strong>Copy image address</strong></p>
   </div>
 
   <!-- Details -->
@@ -602,36 +672,26 @@
   const WEBHOOK_URL = 'https://n8n.joinfleek.com/webhook/vendor-matcher';
 
   // ── Uploaded files (base64) ────────────────────────────────────────────
-  let uploadedImages = []; // { name, dataUrl }
+  let uploadedImages = [];
 
   const uploadZone = document.getElementById('uploadZone');
   const fileInput  = document.getElementById('fileInput');
-  const previewGrid = document.getElementById('previewGrid');
 
   uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
   uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
-  uploadZone.addEventListener('drop', e => {
-    e.preventDefault();
-    uploadZone.classList.remove('drag-over');
-    handleFiles([...e.dataTransfer.files]);
-  });
-
+  uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('drag-over'); handleFiles([...e.dataTransfer.files]); });
   fileInput.addEventListener('change', () => handleFiles([...fileInput.files]));
 
   function handleFiles(files) {
-    const imageFiles = files.filter(f => f.type.startsWith('image/')).slice(0, 8 - uploadedImages.length);
-    imageFiles.forEach(file => {
+    files.filter(f => f.type.startsWith('image/')).slice(0, 8 - uploadedImages.length).forEach(file => {
       const reader = new FileReader();
-      reader.onload = e => {
-        uploadedImages.push({ name: file.name, dataUrl: e.target.result });
-        renderPreviews();
-      };
+      reader.onload = e => { uploadedImages.push({ name: file.name, dataUrl: e.target.result }); renderPreviews(); };
       reader.readAsDataURL(file);
     });
   }
 
   function renderPreviews() {
-    previewGrid.innerHTML = uploadedImages.map((img, i) => `
+    document.getElementById('previewGrid').innerHTML = uploadedImages.map((img, i) => `
       <div class="preview-item">
         <img src="${img.dataUrl}" alt="${img.name}" />
         <button class="preview-remove" onclick="removeImage(${i})">×</button>
@@ -645,26 +705,9 @@
   }
 
   // ── URL inputs ─────────────────────────────────────────────────────────
-  function addUrlRow() {
-    const row = document.createElement('div');
-    row.className = 'url-row';
-    row.innerHTML = `
-      <input type="url" class="img-url-input" placeholder="https://i.pinimg.com/..." />
-      <button class="btn-remove" onclick="removeUrlRow(this)">×</button>
-    `;
-    document.getElementById('urlList').appendChild(row);
-    row.querySelector('input').focus();
-  }
-
-  function removeUrlRow(btn) {
-    const list = document.getElementById('urlList');
-    if (list.children.length === 1) { btn.previousElementSibling.value = ''; return; }
-    btn.parentElement.remove();
-  }
-
   function getUrlInputs() {
-    return [...document.querySelectorAll('.img-url-input')]
-      .map(i => i.value.trim()).filter(Boolean);
+    const textarea = document.getElementById('urlTextarea');
+    return textarea.value.split('\n').map(l => l.trim()).filter(l => l.startsWith('http'));
   }
 
   // ── Run ────────────────────────────────────────────────────────────────
@@ -691,7 +734,6 @@
     content.innerHTML     = '';
     results.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    // Combine uploaded (base64 dataUrls) + pasted URLs into one array
     const imageUrls = [
       ...uploadedImages.map(img => img.dataUrl),
       ...urlImages
@@ -765,4 +807,3 @@
 </script>
 </body>
 </html>
-
