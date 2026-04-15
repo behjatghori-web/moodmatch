@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mood Match — by Fleek</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --pink-hot:    #ff2e93;
+    --pink-rose:   #ff5ca7;
+    --pink-bubble: #ffb3d1;
+    --pink-cotton: #ffd6e7;
+    --pink-pale:   #fff0f6;
+    --lilac-soft:  #e9d8ff;
+    --lilac-mid:   #b892ff;
+    --sky-pale:    #e0f2ff;
+    --ink:         #2a1033;
+    --ink-soft:    #5b3a6b;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(1200px 600px at 10% -10%, var(--pink-cotton), transparent 60%),
+      radial-gradient(1000px 500px at 110% 10%, var(--lilac-soft), transparent 60%),
+      linear-gradient(180deg, #fff 0%, var(--pink-pale) 100%);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .font-display { font-family: 'Instrument Serif', serif; font-weight: 400; letter-spacing: -0.01em; }
+
+  .gradient-text {
+    background: linear-gradient(90deg, var(--pink-hot) 0%, var(--lilac-mid) 60%, #7ab8ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Header */
+  header {
+    position: sticky; top: 0; z-index: 20;
+    backdrop-filter: saturate(140%) blur(10px);
+    background: rgba(255,255,255,0.7);
+    border-bottom: 1px solid rgba(255,46,147,0.08);
+  }
+  .header-inner {
+    max-width: 1120px; margin: 0 auto; padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo { font-size: 28px; line-height: 1; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 999px;
+    background: #fff; border: 1px solid var(--pink-cotton);
+    font-size: 12px; font-weight: 500; color: var(--ink-soft);
+    box-shadow: 0 2px 10px rgba(255,46,147,0.06);
+  }
+
+  /* Layout */
+  main { max-width: 1120px; margin: 0 auto; padding: 40px 24px 80px; }
+  .hero { text-align: center; margin: 28px 0 40px; }
+  .hero h1 { font-size: clamp(44px, 7vw, 76px); margin: 0 0 14px; line-height: 1.02; }
+  .hero p { color: var(--ink-soft); font-size: 18px; margin: 0; }
+
+  /* Cards */
+  .card {
+    background: #fff; border-radius: 24px;
+    border: 1px solid rgba(255,46,147,0.1);
+    box-shadow: 0 20px 60px rgba(184,146,255,0.14), 0 4px 20px rgba(255,46,147,0.05);
+    padding: 28px;
+    margin-bottom: 22px;
+  }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--pink-hot);
+    margin-bottom: 14px;
+  }
+  .sparkle::before { content: '✦'; color: var(--lilac-mid); margin-right: 6px; }
+
+  /* Dropzone */
+  .dropzone {
+    border: 2px dashed var(--pink-bubble);
+    border-radius: 20px; padding: 36px; text-align: center;
+    background: linear-gradient(180deg, #fff 0%, var(--pink-pale) 100%);
+    cursor: pointer; transition: all .15s ease;
+  }
+  .dropzone:hover { border-color: var(--pink-hot); transform: translateY(-1px); }
+  .dropzone.drag { border-color: var(--pink-hot); background: var(--pink-cotton); }
+  .dropzone .emoji { font-size: 44px; }
+  .dropzone .hint { color: var(--ink-soft); font-size: 14px; margin-top: 8px; }
+  .thumbs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  .thumb { position: relative; width: 88px; height: 88px; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 14px rgba(255,46,147,0.12); }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumb button {
+    position: absolute; top: 4px; right: 4px;
+    width: 22px; height: 22px; border-radius: 999px; border: none;
+    background: rgba(42,16,51,0.7); color: #fff; cursor: pointer; font-size: 14px; line-height: 1;
+  }
+
+  /* Form */
+  .grid { display: grid; gap: 18px; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field.full { grid-column: 1 / -1; }
+  .field-label {
+    font-size: 13px; font-weight: 600; color: var(--ink);
+  }
+  .field-label .hint-inline { color: var(--ink-soft); font-weight: 400; margin-left: 6px; }
+  .field-input, .field-select, textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--pink-cotton);
+    background: #fff;
+    font: inherit; color: var(--ink);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .field-input:focus, .field-select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--pink-rose);
+    box-shadow: 0 0 0 4px rgba(255,92,167,0.15);
+  }
+  textarea { min-height: 110px; resize: vertical; }
+  .field-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ff2e93' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat; background-position: right 14px center;
+    padding-right: 38px;
+  }
+
+  /* CTA */
+  .cta {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%;
+    padding: 16px 24px; border-radius: 16px; border: none;
+    font: 600 16px/1 'Inter', sans-serif; color: #fff; cursor: pointer;
+    background: linear-gradient(90deg, var(--pink-hot), var(--lilac-mid));
+    box-shadow: 0 10px 30px rgba(255,46,147,0.3);
+    transition: transform .1s, box-shadow .15s, opacity .15s;
+  }
+  .cta:hover { transform: translateY(-1px); box-shadow: 0 14px 36px rgba(255,46,147,0.38); }
+  .cta:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  /* Results */
+  .results { margin-top: 32px; }
+  .vendor-row {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+    padding: 16px 0; border-bottom: 1px dashed var(--pink-cotton);
+  }
+  .vendor-row:last-child { border-bottom: none; }
+  .vendor-name { font-weight: 600; font-size: 16px; }
+  .vendor-meta { color: var(--ink-soft); font-size: 13px; margin-top: 4px; }
+  .score-pill {
+    flex-shrink: 0;
+    padding: 6px 12px; border-radius: 999px;
+    background: linear-gradient(90deg, var(--pink-cotton), var(--lilac-soft));
+    color: var(--ink); font-size: 12px; font-weight: 600;
+  }
+
+  .history-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  }
+  @media (max-width: 700px) { .history-grid { grid-template-columns: 1fr; } }
+  .history-card {
+    padding: 18px; border-radius: 18px;
+    background: linear-gradient(180deg, #fff, var(--sky-pale));
+    border: 1px solid rgba(184,146,255,0.25);
+  }
+  .history-card .name { font-weight: 600; font-size: 15px; margin-bottom: 10px; }
+  .history-card .kv { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-soft); padding: 4px 0; }
+  .history-card .kv strong { color: var(--ink); font-weight: 600; }
+
+  .error {
+    background: #fff5f7; border: 1px solid #ffb3d1; color: #b30057;
+    padding: 14px 16px; border-radius: 14px; font-size: 14px; margin-top: 16px;
+  }
+  .empty { color: var(--ink-soft); font-size: 14px; font-style: italic; padding: 14px 0; }
+
+  .loading-dots::after {
+    content: '...';
+    animation: dots 1.4s steps(4, end) infinite;
+  }
+  @keyframes dots { 0%{content:''} 25%{content:'.'} 50%{content:'..'} 75%{content:'...'} }
+
+  footer { text-align: center; color: var(--ink-soft); font-size: 12px; padding: 20px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span class="logo font-display gradient-text">Mood Match</span>
+    </div>
+    <span class="chip"><span class="sparkle"></span> by Fleek</span>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1 class="font-display">Find your <span class="gradient-text">perfect vendors!</span></h1>
+    <p>Mood Match is your new Y2K bestie :)</p>
+  </section>
+
+  <!-- Moodboard -->
+  <section class="card">
+    <div class="section-label sparkle">Moodboard</div>
+    <label class="dropzone" id="dropzone">
+      <input id="file-input" type="file" accept="image/*" multiple style="display:none" />
+      <div class="emoji">🖼️</div>
+      <div style="font-weight:600; margin-top:6px;">Drop your vibe here</div>
+      <div class="hint">or click to browse — PNG, JPG, WebP</div>
+    </label>
+    <div class="thumbs" id="thumbs"></div>
+  </section>
+
+  <!-- Details -->
+  <section class="card">
+    <div class="section-label sparkle">The details</div>
+    <div class="grid">
+      <div class="field">
+        <label class="field-label" for="buyer-name">Buyer name</label>
+        <input id="buyer-name" class="field-input" type="text" placeholder="e.g. Sophia @ Urban Outfitters" />
+      </div>
+      <div class="field">
+        <label class="field-label" for="vendors-to-return">Vendors to return</label>
+        <select id="vendors-to-return" class="field-select">
+          <option value="3">3</option>
+          <option value="5" selected>5</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label class="field-label" for="buyer-email">
+          Buyer email
+          <span class="hint-inline">optional — pulls their previous vendors</span>
+        </label>
+        <input id="buyer-email" class="field-input" type="email" placeholder="buyer@brand.com" />
+      </div>
+      <div class="field full">
+        <label class="field-label" for="style-description">Style description</label>
+        <textarea id="style-description" placeholder="Beaded cami tops, early-2000s party girl, metallic + pastel palette, low-rise vibes..."></textarea>
+      </div>
+    </div>
+    <div style="margin-top: 22px;">
+      <button id="submit-btn" class="cta">
+        <span class="sparkle"></span>
+        <span id="cta-label">Find my vendors</span>
+      </button>
+    </div>
+    <div id="error-box"></div>
+  </section>
+
+  <!-- Results -->
+  <div class="results" id="results"></div>
+</main>
+
+<footer>Mood Match · internal tool · Fleek 2026</footer>
+
+<script>
+  // -------- CONFIG --------
+  // Point this at your n8n webhook URL directly.
+  // If your n8n is on a different domain, make sure CORS is allowed on the webhook node,
+  // OR keep using the Vercel /api/moodmatch proxy.
+  const ENDPOINT = "https://n8n.joinfleek.com/webhook-test/moodmatch";
+
+  // -------- STATE --------
+  const images = []; // { name, dataUrl }
+
+  // -------- DOM --------
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('file-input');
+  const thumbs = document.getElementById('thumbs');
+  const submitBtn = document.getElementById('submit-btn');
+  const ctaLabel = document.getElementById('cta-label');
+  const errorBox = document.getElementById('error-box');
+  const resultsEl = document.getElementById('results');
+
+  // -------- DROPZONE --------
+  dropzone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+  ['dragenter','dragover'].forEach(ev =>
+    dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.add('drag'); })
+  );
+  ['dragleave','drop'].forEach(ev =>
+    dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.remove('drag'); })
+  );
+  dropzone.addEventListener('drop', e => handleFiles(e.dataTransfer.files));
+
+  function handleFiles(fileList) {
+    Array.from(fileList).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        images.push({ name: file.name, dataUrl: reader.result });
+        renderThumbs();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderThumbs() {
+    thumbs.innerHTML = '';
+    images.forEach((img, i) => {
+      const el = document.createElement('div');
+      el.className = 'thumb';
+      el.innerHTML = `<img src="${img.dataUrl}" alt="${img.name}" /><button aria-label="remove" data-i="${i}">×</button>`;
+      el.querySelector('button').addEventListener('click', ev => {
+        ev.stopPropagation();
+        const idx = Number(ev.currentTarget.dataset.i);
+        images.splice(idx, 1);
+        renderThumbs();
+      });
+      thumbs.appendChild(el);
+    });
+  }
+
+  // -------- SUBMIT --------
+  submitBtn.addEventListener('click', async () => {
+    errorBox.innerHTML = '';
+    resultsEl.innerHTML = '';
+
+    const buyerName = document.getElementById('buyer-name').value.trim();
+    const buyerEmail = document.getElementById('buyer-email').value.trim();
+    const vendorsToReturn = Number(document.getElementById('vendors-to-return').value);
+    const brief = document.getElementById('style-description').value.trim();
+
+    if (images.length === 0 && !brief) {
+      showError('Add at least one moodboard image or write a style description.');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    ctaLabel.innerHTML = 'Matching<span class="loading-dots"></span>';
+
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          images: images.map(i => i.dataUrl),
+          brief,
+          buyer_name: buyerName,
+          buyer_email: buyerEmail,
+          vendors_to_return: vendorsToReturn,
+        }),
+      });
+
+      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+      const data = await res.json();
+      renderResults(data, buyerEmail);
+    } catch (err) {
+      showError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      submitBtn.disabled = false;
+      ctaLabel.textContent = 'Find my vendors';
+    }
+  });
+
+  function showError(msg) {
+    errorBox.innerHTML = `<div class="error">${msg}</div>`;
+  }
+
+  // -------- RENDER RESULTS --------
+  function renderResults(data, buyerEmail) {
+    const vendors = (data && data.vendors) || [];
+    const history = (data && data.buyer_history_vendors) || [];
+    const styleSummary = data && data.style_summary;
+
+    let html = '';
+
+    if (styleSummary) {
+      html += `
+        <section class="card">
+          <div class="section-label sparkle">Style read</div>
+          <p style="margin:0; color:var(--ink-soft); line-height:1.55;">${escapeHtml(styleSummary)}</p>
+        </section>
+      `;
+    }
+
+    // Primary: moodboard matches
+    html += `<section class="card">
+      <div class="section-label sparkle">Moodboard matches</div>`;
+    if (vendors.length === 0) {
+      html += `<div class="empty">No matches came back. Try adding another moodboard image or more detail in the description.</div>`;
+    } else {
+      html += vendors.map(v => `
+        <div class="vendor-row">
+          <div>
+            <div class="vendor-name">${escapeHtml(v.vendor || v.name || 'Unknown vendor')}</div>
+            <div class="vendor-meta">${escapeHtml([v.reason, v.tags && v.tags.join(' · '), v.products_count && `${v.products_count} products`].filter(Boolean).join(' · '))}</div>
+          </div>
+          ${v.score != null ? `<div class="score-pill">match ${Math.round(v.score)}</div>` : ''}
+        </div>
+      `).join('');
+    }
+    html += `</section>`;
+
+    // Secondary: buyer history (only if email was provided)
+    if (buyerEmail) {
+      html += `<section class="card">
+        <div class="section-label sparkle">Previously loved</div>`;
+      if (history.length === 0) {
+        html += `<div class="empty">No previous order history found for ${escapeHtml(buyerEmail)}.</div>`;
+      } else {
+        html += `<div class="history-grid">` + history.map(h => `
+          <div class="history-card">
+            <div class="name">${escapeHtml(h.vendor || 'Unknown vendor')}</div>
+            <div class="kv"><span>Orders</span><strong>${h.order_count ?? '—'}</strong></div>
+            <div class="kv"><span>Last ordered</span><strong>${formatDate(h.last_ordered_at)}</strong></div>
+            <div class="kv"><span>Total spend</span><strong>${formatGbp(h.total_spend_gbp)}</strong></div>
+          </div>
+        `).join('') + `</div>`;
+      }
+      html += `</section>`;
+    }
+
+    resultsEl.innerHTML = html;
+  }
+
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function formatDate(d) {
+    if (!d) return '—';
+    try {
+      const dt = new Date(typeof d === 'object' && d.value ? d.value : d);
+      if (isNaN(dt.getTime())) return '—';
+      return dt.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    } catch { return '—'; }
+  }
+  function formatGbp(n) {
+    if (n == null) return '—';
+    return new Intl.NumberFormat('en-GB', { style:'currency', currency:'GBP', maximumFractionDigits: 0 }).format(Number(n));
+  }
+</script>
+
+</body>
+</html>
