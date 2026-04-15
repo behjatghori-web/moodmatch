@@ -1,809 +1,451 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MoodMatch — Fleek Vendor Finder</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --pink:       #f472b6;
-      --pink-light: #fce7f3;
-      --pink-mid:   #fbcfe8;
-      --blue:       #93c5fd;
-      --blue-light: #eff6ff;
-      --blue-mid:   #bfdbfe;
-      --purple:     #c4b5fd;
-      --bg:         #fafafa;
-      --white:      #ffffff;
-      --text:       #1a1a1a;
-      --muted:      #9ca3af;
-      --border:     #f0e6f6;
-    }
-
-    body {
-      font-family: 'DM Sans', -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    /* ── Header ── */
-    header {
-      background: white;
-      border-bottom: 1px solid var(--border);
-      padding: 0 32px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .logo-star { color: var(--pink); font-size: 18px; }
-    .logo span { color: var(--pink); }
-
-    .fleek-badge {
-      font-size: 11px;
-      background: var(--pink-light);
-      color: var(--pink);
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-weight: 600;
-      letter-spacing: 0.3px;
-    }
-
-    /* ── Hero ── */
-    .hero {
-      background: linear-gradient(135deg, #fff0f8 0%, #eff6ff 50%, #f5f0ff 100%);
-      padding: 56px 24px 48px;
-      text-align: center;
-      border-bottom: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero::before {
-      content: '✦';
-      position: absolute; top: 20px; left: 8%;
-      font-size: 24px; color: var(--pink); opacity: 0.4;
-      animation: float 3s ease-in-out infinite;
-    }
-    .hero::after {
-      content: '✦';
-      position: absolute; bottom: 20px; right: 10%;
-      font-size: 18px; color: var(--blue); opacity: 0.5;
-      animation: float 4s ease-in-out infinite reverse;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(-8px); }
-    }
-
-    .hero-sparkles {
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      margin-bottom: 16px;
-      font-size: 13px;
-      color: var(--pink);
-      letter-spacing: 4px;
-    }
-
-    h1 {
-      font-size: 40px;
-      font-weight: 700;
-      letter-spacing: -1px;
-      line-height: 1.1;
-      margin-bottom: 12px;
-    }
-
-    h1 .grad {
-      background: linear-gradient(90deg, var(--pink), var(--purple), var(--blue));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero p {
-      color: var(--muted);
-      font-size: 16px;
-      max-width: 440px;
-      margin: 0 auto;
-    }
-
-    /* ── Main layout ── */
-    .container {
-      max-width: 780px;
-      margin: 0 auto;
-      padding: 40px 20px 80px;
-    }
-
-    /* ── Cards ── */
-    .card {
-      background: white;
-      border: 1.5px solid var(--border);
-      border-radius: 20px;
-      padding: 28px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 12px rgba(244, 114, 182, 0.06);
-    }
-
-    .card-title {
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--pink);
-      margin-bottom: 18px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: #6b7280;
-      margin-bottom: 7px;
-    }
-
-    input[type="text"], input[type="url"], textarea, select {
-      width: 100%;
-      background: #fafafa;
-      border: 1.5px solid #f0e6f6;
-      border-radius: 12px;
-      color: var(--text);
-      font-size: 14px;
-      padding: 11px 14px;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      font-family: inherit;
-    }
-
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--pink);
-      box-shadow: 0 0 0 3px rgba(244,114,182,0.1);
-      background: white;
-    }
-
-    textarea { resize: vertical; min-height: 72px; }
-
-    .field { margin-bottom: 18px; }
-    .field:last-child { margin-bottom: 0; }
-
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
-
-    /* ── Upload zone ── */
-    .upload-zone {
-      border: 2px dashed var(--pink-mid);
-      border-radius: 16px;
-      padding: 32px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: var(--pink-light);
-      position: relative;
-    }
-
-    .upload-zone:hover, .upload-zone.drag-over {
-      border-color: var(--pink);
-      background: #fde8f4;
-    }
-
-    .upload-zone input[type="file"] {
-      position: absolute; inset: 0;
-      opacity: 0; cursor: pointer;
-      width: 100%; height: 100%;
-      border: none; padding: 0; background: none;
-    }
-
-    .upload-icon { font-size: 32px; margin-bottom: 10px; }
-
-    .upload-zone p {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--pink);
-      margin-bottom: 4px;
-    }
-
-    .upload-zone small { color: var(--muted); font-size: 12px; }
-
-    /* ── Image previews ── */
-    .preview-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .preview-item {
-      position: relative;
-      width: 80px;
-      height: 80px;
-    }
-
-    .preview-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 10px;
-      border: 2px solid var(--pink-mid);
-    }
-
-    .preview-remove {
-      position: absolute;
-      top: -6px; right: -6px;
-      background: var(--pink);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 20px; height: 20px;
-      font-size: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-    }
-
-    /* ── OR divider ── */
-    .or-divider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 16px 0;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .or-divider::before, .or-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    /* ── Links section ── */
-    .links-section {
-      margin-top: 18px;
-    }
-
-    .links-label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--pink);
-      margin-bottom: 8px;
-      letter-spacing: 0.02em;
-    }
-
-    .url-textarea {
-      width: 100%;
-      min-height: 110px;
-      padding: 12px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 14px;
-      background: var(--card-bg);
-      color: var(--text);
-      font-size: 13px;
-      font-family: inherit;
-      line-height: 1.6;
-      resize: vertical;
-      box-sizing: border-box;
-      transition: border-color .2s;
-    }
-
-    .url-textarea:focus {
-      outline: none;
-      border-color: var(--pink);
-      box-shadow: 0 0 0 3px rgba(255,105,180,.12);
-    }
-
-    .url-textarea::placeholder { color: var(--muted); }
-
-    /* ── URL row (legacy, kept for safety) ── */
-    .url-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .url-row input { flex: 1; margin: 0; }
-
-    .btn-remove {
-      background: var(--pink-light);
-      border: none;
-      border-radius: 8px;
-      color: var(--pink);
-      cursor: pointer;
-      font-size: 16px;
-      width: 38px; height: 38px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: background 0.2s;
-    }
-
-    .btn-remove:hover { background: var(--pink-mid); }
-
-    .btn-add-url {
-      background: none;
-      border: 1.5px dashed var(--pink-mid);
-      border-radius: 10px;
-      color: var(--pink);
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 8px 16px;
-      margin-top: 4px;
-      transition: all 0.2s;
-      width: 100%;
-      font-family: inherit;
-    }
-
-    .btn-add-url:hover { background: var(--pink-light); border-color: var(--pink); }
-
-    /* ── Submit button ── */
-    .btn-submit {
-      width: 100%;
-      background: linear-gradient(135deg, var(--pink), #e879f9);
-      color: white;
-      border: none;
-      border-radius: 14px;
-      font-size: 16px;
-      font-weight: 700;
-      padding: 16px;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      font-family: inherit;
-      letter-spacing: 0.2px;
-      box-shadow: 0 4px 20px rgba(244,114,182,0.35);
-      margin-top: 4px;
-    }
-
-    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(244,114,182,0.45); }
-    .btn-submit:active { transform: translateY(0); }
-    .btn-submit:disabled {
-      background: #e5e7eb;
-      color: #9ca3af;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    /* ── Results ── */
-    #results { display: none; margin-top: 28px; }
-
-    .loader {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 60px 20px;
-      gap: 16px;
-    }
-
-    .spinner {
-      width: 36px; height: 36px;
-      border: 3px solid var(--pink-mid);
-      border-top-color: var(--pink);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loader p { color: var(--muted); font-size: 14px; }
-
-    /* ── Style summary chips ── */
-    .style-summary {
-      background: linear-gradient(135deg, var(--pink-light), var(--blue-light));
-      border: 1.5px solid var(--pink-mid);
-      border-radius: 16px;
-      padding: 16px 20px;
-      margin-bottom: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .style-summary-label {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--pink);
-      width: 100%;
-      margin-bottom: 4px;
-    }
-
-    .chip {
-      background: white;
-      border: 1.5px solid var(--pink-mid);
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 12px;
-      color: #6b7280;
-    }
-
-    .chip strong { color: var(--text); }
-
-    /* ── Vendor cards ── */
-    .results-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .results-header h2 {
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .results-meta { font-size: 12px; color: var(--muted); }
-
-    .vendor-list { display: flex; flex-direction: column; gap: 12px; }
-
-    .vendor-card {
-      background: white;
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      padding: 18px 20px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      transition: box-shadow 0.2s, border-color 0.2s;
-    }
-
-    .vendor-card:hover {
-      border-color: var(--pink-mid);
-      box-shadow: 0 4px 16px rgba(244,114,182,0.1);
-    }
-
-    .rank-badge {
-      width: 36px; height: 36px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      font-weight: 800;
-      flex-shrink: 0;
-    }
-
-    .rank-1 { background: linear-gradient(135deg,#fce7f3,#fbcfe8); color: var(--pink); }
-    .rank-2 { background: linear-gradient(135deg,#eff6ff,#bfdbfe); color: #3b82f6; }
-    .rank-3 { background: linear-gradient(135deg,#f5f3ff,#ddd6fe); color: #7c3aed; }
-    .rank-other { background: #f9fafb; color: #9ca3af; }
-
-    .vendor-info { flex: 1; min-width: 0; }
-
-    .vendor-name {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 2px;
-    }
-
-    .vendor-handle {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    .vendor-why {
-      font-size: 12px;
-      color: #9ca3af;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .vendor-right { text-align: right; flex-shrink: 0; }
-
-    .score {
-      background: linear-gradient(135deg, var(--pink-light), var(--blue-light));
-      border: 1.5px solid var(--pink-mid);
-      border-radius: 8px;
-      padding: 4px 10px;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--pink);
-      margin-bottom: 4px;
-    }
-
-    .origin { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    .products { font-size: 11px; color: #d1d5db; margin-top: 2px; }
-
-    .error-box {
-      background: #fff5f5;
-      border: 1.5px solid #fecaca;
-      border-radius: 14px;
-      padding: 20px;
-      color: #ef4444;
-      font-size: 14px;
-    }
-
-    .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
-    .hint a { color: var(--pink); text-decoration: none; }
-
-    /* ── Input mode tabs (legacy) ── */
-    .mode-tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 24px;
-    }
-
-    .mode-tab {
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 8px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: #fafafa;
-      font-family: inherit;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--muted);
-    }
-
-    .mode-tab .tab-icon { font-size: 20px; display: block; margin-bottom: 4px; }
-
-    .mode-tab:hover { border-color: var(--pink-mid); color: var(--text); }
-
-    .mode-tab.active {
-      border-color: var(--pink);
-      background: var(--pink-light);
-      color: var(--pink);
-      box-shadow: 0 0 0 3px rgba(244,114,182,0.1);
-    }
-
-    .mode-panel { display: none; }
-    .mode-panel.active { display: block; }
-  </style>
-</head>
-<body>
-
-<header>
-  <div class="logo">
-    <span class="logo-star">✦</span>
-    Mood<span>Match</span>
-  </div>
-  <div class="fleek-badge">by Fleek</div>
-</header>
-
-<div class="hero">
-  <div class="hero-sparkles">✦ &nbsp; ✦ &nbsp; ✦</div>
-  <h1>Find your <span class="grad">perfect vendors!</span></h1>
-  <p style="margin-top:10px">Mood Match is your new Y2K bestie :)</p>
-  <p style="margin-top:6px">Upload a moodboard or paste image links — get matched vendors from the Fleek Womenswear catalog instantly.</p>
-</div>
-
-<div class="container">
-
-  <!-- Image Input -->
-  <div class="card">
-    <div class="card-title">✦ Your Moodboard</div>
-
-    <!-- Drop zone (always visible) -->
-    <div class="upload-zone" id="uploadZone">
-      <input type="file" id="fileInput" accept="image/*" multiple />
-      <div class="upload-icon">🖼️</div>
-      <p>Drop images here or click to upload</p>
-      <small>JPG, PNG, WEBP — up to 8 images</small>
-    </div>
-    <div class="preview-grid" id="previewGrid"></div>
-
-    <!-- Links section -->
-    <div class="links-section">
-      <label class="links-label">🔗 Or paste image links</label>
-      <textarea id="urlTextarea" class="url-textarea" placeholder="Paste image URLs here, one per line&#10;&#10;e.g. https://i.pinimg.com/...&#10;     https://i.pinimg.com/...&#10;&#10;Tip: right-click a Pinterest image → Copy image address"></textarea>
-    </div>
-  </div>
-
-  <!-- Details -->
-  <div class="card">
-    <div class="card-title">✦ Details</div>
-    <div class="row">
-      <div class="field">
-        <label>Buyer Name</label>
-        <input type="text" id="buyerName" placeholder="e.g. Sarah from NYC" />
-      </div>
-      <div class="field">
-        <label>Vendors to return</label>
-        <select id="maxVendors">
-          <option value="3">Top 3</option>
-          <option value="5" selected>Top 5</option>
-          <option value="8">Top 8</option>
-          <option value="10">Top 10</option>
-        </select>
-      </div>
-    </div>
-    <div class="field">
-      <label>Style Description <span style="font-weight:400;text-transform:none">(optional)</span></label>
-      <textarea id="description" placeholder="e.g. Y2K glam, velour tracksuits, Juicy Couture vibes, 2000s mall girl..."></textarea>
-    </div>
-  </div>
-
-  <button class="btn-submit" id="submitBtn" onclick="runMatcher()">
-    ✦ &nbsp; Find Matching Vendors
-  </button>
-
-  <!-- Results -->
-  <div id="results">
-    <div class="loader" id="loader">
-      <div class="spinner"></div>
-      <p>Analysing style & matching vendors...</p>
-    </div>
-    <div id="resultsContent"></div>
-  </div>
-
-</div>
-
-<script>
-  // ── CONFIG — swap to /webhook/ (remove -test) after publishing in n8n ──
-  const WEBHOOK_URL = 'https://n8n.joinfleek.com/webhook/vendor-matcher';
-
-  // ── Uploaded files (base64) ────────────────────────────────────────────
-  let uploadedImages = [];
-
-  const uploadZone = document.getElementById('uploadZone');
-  const fileInput  = document.getElementById('fileInput');
-
-  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
-  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
-  uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('drag-over'); handleFiles([...e.dataTransfer.files]); });
-  fileInput.addEventListener('change', () => handleFiles([...fileInput.files]));
-
-  function handleFiles(files) {
-    files.filter(f => f.type.startsWith('image/')).slice(0, 8 - uploadedImages.length).forEach(file => {
-      const reader = new FileReader();
-      reader.onload = e => { uploadedImages.push({ name: file.name, dataUrl: e.target.result }); renderPreviews(); };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  function renderPreviews() {
-    document.getElementById('previewGrid').innerHTML = uploadedImages.map((img, i) => `
-      <div class="preview-item">
-        <img src="${img.dataUrl}" alt="${img.name}" />
-        <button class="preview-remove" onclick="removeImage(${i})">×</button>
-      </div>
-    `).join('');
-  }
-
-  function removeImage(i) {
-    uploadedImages.splice(i, 1);
-    renderPreviews();
-  }
-
-  // ── URL inputs ─────────────────────────────────────────────────────────
-  function getUrlInputs() {
-    const textarea = document.getElementById('urlTextarea');
-    return textarea.value.split('\n').map(l => l.trim()).filter(l => l.startsWith('http'));
-  }
-
-  // ── Run ────────────────────────────────────────────────────────────────
-  async function runMatcher() {
-    const urlImages   = getUrlInputs();
-    const description = document.getElementById('description').value.trim();
-    const buyerName   = document.getElementById('buyerName').value.trim() || 'Buyer';
-    const maxVendors  = parseInt(document.getElementById('maxVendors').value);
-
-    if (uploadedImages.length === 0 && urlImages.length === 0 && !description) {
-      alert('Please upload an image, paste a URL, or add a style description ✦');
-      return;
-    }
-
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.textContent = 'Matching...';
-
-    const results = document.getElementById('results');
-    const loader  = document.getElementById('loader');
-    const content = document.getElementById('resultsContent');
-    results.style.display = 'block';
-    loader.style.display  = 'flex';
-    content.innerHTML     = '';
-    results.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-    const imageUrls = [
-      ...uploadedImages.map(img => img.dataUrl),
-      ...urlImages
-    ].slice(0, 8);
-
+'use client';
+import { useState, useCallback, useRef } from 'react';
+
+type Vendor = {
+  rank: number;
+  vendor: string;
+  match_score: number;
+  total_products: number;
+  target_l2_count: number;
+  brand_matches: number;
+  y2k_brand_hits: number;
+  keyword_hits: number;
+  matched_brands: string;
+};
+
+type BuyerHistoryVendor = {
+  rank: number;
+  vendor: string;
+  order_count: number;
+  last_ordered_at: string | null;
+  total_spend_gbp: number | null;
+};
+
+type StyleAnalysis = {
+  aesthetic_summary: string;
+  aesthetics: string[];
+  l1: string;
+  l2_targets: string[];
+  style_keywords: string[];
+  era_keywords: string[];
+  priority_brands: string[];
+  silhouette_notes: string;
+  confidence: number | null;
+};
+
+type ApiResponse = {
+  ok: boolean;
+  style_analysis?: StyleAnalysis;
+  vendors?: Vendor[];
+  buyer_history_vendors?: BuyerHistoryVendor[];
+  error?: string;
+  generated_at?: string;
+};
+
+const VENDOR_COUNT_OPTIONS = [3, 5, 10, 15, 20] as const;
+
+export default function Home() {
+  const [images, setImages] = useState<string[]>([]);
+  const [buyerName, setBuyerName] = useState('');
+  const [buyerEmail, setBuyerEmail] = useState('');
+  const [vendorsToReturn, setVendorsToReturn] = useState<number>(5);
+  const [styleDescription, setStyleDescription] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<ApiResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  const onFiles = useCallback(async (files: FileList | null) => {
+    if (!files) return;
+    const reads = Array.from(files)
+      .filter((f) => f.type.startsWith('image/'))
+      .slice(0, 8)
+      .map(
+        (f) =>
+          new Promise<string>((resolve, reject) => {
+            const r = new FileReader();
+            r.onload = () => resolve(r.result as string);
+            r.onerror = reject;
+            r.readAsDataURL(f);
+          })
+      );
+    const urls = await Promise.all(reads);
+    setImages((prev) => [...prev, ...urls].slice(0, 8));
+  }, []);
+
+  const submit = async () => {
+    if (images.length === 0) return;
+    setLoading(true);
+    setError(null);
+    setResult(null);
     try {
-      const res = await fetch(WEBHOOK_URL, {
+      const res = await fetch('/api/moodmatch', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageUrls, description, buyerName, maxVendors })
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          images,
+          brief: styleDescription.trim() || undefined,
+          buyer_name: buyerName.trim() || undefined,
+          buyer_email: buyerEmail.trim() || undefined,
+          vendors_to_return: vendorsToReturn
+        })
       });
-      if (!res.ok) throw new Error(`Error ${res.status} — check n8n workflow is active`);
-      const data = await res.json();
-      loader.style.display = 'none';
-      renderResults(data, buyerName);
-    } catch (err) {
-      loader.style.display = 'none';
-      content.innerHTML = `<div class="error-box">⚠️ ${err.message}</div>`;
+      const data: ApiResponse = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      setResult(data);
+      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 150);
+    } catch (e: any) {
+      setError(e.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
     }
+  };
 
-    btn.disabled = false;
-    btn.innerHTML = '✦ &nbsp; Find Matching Vendors';
-  }
+  const reset = () => {
+    setImages([]);
+    setBuyerName('');
+    setBuyerEmail('');
+    setStyleDescription('');
+    setVendorsToReturn(5);
+    setResult(null);
+    setError(null);
+  };
 
-  // ── Render results ─────────────────────────────────────────────────────
-  function renderResults(data, buyerName) {
-    const content = document.getElementById('resultsContent');
-    const s = data.style_summary || {};
-    const vendors = data.vendor_shortlist || [];
-
-    const chips = [
-      s.era        && `<div class="chip"><strong>Era</strong> ${s.era}</div>`,
-      s.aesthetic  && `<div class="chip"><strong>Aesthetic</strong> ${s.aesthetic}</div>`,
-      s.categories && `<div class="chip"><strong>Categories</strong> ${s.categories}</div>`,
-      s.gender     && `<div class="chip"><strong>Gender</strong> ${s.gender}</div>`,
-      s.key_brands && s.key_brands !== 'none identified' && `<div class="chip"><strong>Brands</strong> ${s.key_brands}</div>`,
-    ].filter(Boolean).join('');
-
-    const rankClass = i => i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-other';
-
-    const vendorCards = vendors.map((v, i) => `
-      <div class="vendor-card">
-        <div class="rank-badge ${rankClass(i)}">#${v.rank}</div>
-        <div class="vendor-info">
-          <div class="vendor-name">${v.vendor_name || v.vendor_handle}</div>
-          <div class="vendor-handle">@${v.vendor_handle}</div>
-          <div class="vendor-why">✦ ${v.why}</div>
+  return (
+    <main className="min-h-screen">
+      {/* ───────────── Header ───────────── */}
+      <header className="sticky top-0 z-10 backdrop-blur-md bg-white/80 border-b border-gray-100">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 font-semibold text-lg">
+            <span className="text-pink-hot">✦</span>
+            <span className="text-ink">Mood</span>
+            <span className="gradient-text">Match</span>
+          </div>
+          <div className="chip">by Fleek</div>
         </div>
-        <div class="vendor-right">
-          <div class="score">${v.match_score} pts</div>
-          <div class="origin">${v.origin || '—'}</div>
-          <div class="products">${v.active_products} products</div>
-        </div>
-      </div>
-    `).join('');
+      </header>
 
-    content.innerHTML = `
-      ${chips ? `<div class="style-summary"><div class="style-summary-label">✦ Style Analysis</div>${chips}</div>` : ''}
-      <div class="results-header">
-        <h2>Matches for ${data.buyer || buyerName}</h2>
-        <span class="results-meta">${data.vendors_analyzed || 0} vendors scanned</span>
-      </div>
-      <div class="vendor-list">
-        ${vendorCards || '<p style="text-align:center;color:#9ca3af;padding:40px">No matches — try adding more images or a description.</p>'}
-      </div>
-      <p style="font-size:11px;color:#d1d5db;text-align:center;margin-top:20px">
-        ${new Date(data.generated_at || Date.now()).toLocaleString()}
-      </p>
-    `;
-  }
-</script>
-</body>
-</html>
+      {/* ───────────── Hero ───────────── */}
+      <section className="relative bg-hero-gradient py-20 md:py-28 overflow-hidden">
+        <div className="sparkle-bg absolute inset-0" />
+        <div className="relative max-w-4xl mx-auto px-6 text-center">
+          <div className="text-pink-hot text-xl mb-3 tracking-[0.4em]">✦ ✦ ✦</div>
+          <h1 className="font-display text-5xl md:text-7xl leading-[1.05] tracking-tight text-ink">
+            Find your <span className="gradient-text italic">perfect vendors!</span>
+          </h1>
+          <p className="mt-6 text-lg md:text-xl text-gray-600">
+            Mood Match is your new Y2K bestie <span className="text-pink-rose">:)</span>
+          </p>
+          <p className="mt-2 text-base md:text-lg text-gray-500 max-w-2xl mx-auto">
+            Upload a moodboard or paste image links — get matched vendors from the Fleek
+            Womenswear catalog instantly.
+          </p>
+        </div>
+      </section>
+
+      {/* ───────────── Form ───────────── */}
+      <section className="max-w-4xl mx-auto px-6 -mt-12 relative z-[1] pb-24 space-y-6">
+        {/* Moodboard card */}
+        <div className="card">
+          <div className="section-label mb-4">Your moodboard</div>
+
+          <div
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              onFiles(e.dataTransfer.files);
+            }}
+            onClick={() => inputRef.current?.click()}
+            className="cursor-pointer border-2 border-dashed border-pink-rose/60 rounded-2xl p-10 md:p-14 text-center bg-pink-pale hover:bg-pink-cotton/40 transition"
+          >
+            <div className="text-5xl mb-4">🖼️</div>
+            <div className="text-lg md:text-xl font-semibold text-pink-hot mb-1">
+              Drop images here or click to upload
+            </div>
+            <div className="text-sm text-gray-500">JPG, PNG, WEBP — up to 8 images</div>
+            <input
+              ref={inputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              hidden
+              onChange={(e) => onFiles(e.target.files)}
+            />
+          </div>
+
+          {images.length > 0 && (
+            <div className="grid grid-cols-4 md:grid-cols-8 gap-3 mt-5">
+              {images.map((src, i) => (
+                <div
+                  key={i}
+                  className="relative aspect-square rounded-xl overflow-hidden border border-pink-cotton shadow-card"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={src} alt="" className="w-full h-full object-cover" />
+                  <button
+                    onClick={() => setImages((p) => p.filter((_, idx) => idx !== i))}
+                    className="absolute top-1 right-1 w-6 h-6 bg-white/90 text-pink-hot rounded-full text-sm font-bold shadow hover:bg-white"
+                    aria-label="Remove"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Details card */}
+        <div className="card">
+          <div className="section-label mb-5">Details</div>
+
+          <div className="grid md:grid-cols-2 gap-5">
+            <div>
+              <label className="field-label">Buyer Name</label>
+              <input
+                type="text"
+                className="field-input"
+                placeholder="e.g. Sarah from NYC"
+                value={buyerName}
+                onChange={(e) => setBuyerName(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="field-label">Vendors to return</label>
+              <select
+                className="field-input appearance-none pr-10 bg-no-repeat bg-[length:1rem_1rem] bg-[right_1rem_center]"
+                style={{
+                  backgroundImage:
+                    "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23ff5ca7'><path d='M5.25 7.5l4.75 5 4.75-5z'/></svg>\")"
+                }}
+                value={vendorsToReturn}
+                onChange={(e) => setVendorsToReturn(Number(e.target.value))}
+              >
+                {VENDOR_COUNT_OPTIONS.map((n) => (
+                  <option key={n} value={n}>
+                    Top {n}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="field-label">
+                Buyer Email <span className="text-gray-400 font-normal">(optional — pulls their previous vendors)</span>
+              </label>
+              <input
+                type="email"
+                className="field-input"
+                placeholder="buyer@brand.com"
+                value={buyerEmail}
+                onChange={(e) => setBuyerEmail(e.target.value)}
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="field-label">
+                Style Description <span className="text-gray-400 font-normal">(optional)</span>
+              </label>
+              <textarea
+                className="field-input resize-none"
+                rows={3}
+                placeholder="e.g. Y2K glam, velour tracksuits, Juicy Couture vibes, 2000s mall girl..."
+                value={styleDescription}
+                onChange={(e) => setStyleDescription(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="flex flex-col md:flex-row items-center gap-4 justify-center pt-2">
+          <button
+            className="cta-button"
+            onClick={submit}
+            disabled={loading || images.length === 0}
+          >
+            {loading ? (
+              <>
+                <span className="inline-block animate-pulse">✦</span>
+                Finding your vendors...
+              </>
+            ) : (
+              <>
+                <span>✦</span>
+                Find my vendors
+              </>
+            )}
+          </button>
+          {(images.length > 0 || buyerName || buyerEmail || styleDescription) && !loading && (
+            <button className="text-sm text-gray-500 hover:text-pink-hot underline" onClick={reset}>
+              reset
+            </button>
+          )}
+        </div>
+
+        {error && (
+          <div className="card border-pink-hot/40 bg-pink-pale">
+            <div className="text-pink-hot font-semibold mb-1">✗ Error</div>
+            <div className="text-sm text-ink">{error}</div>
+          </div>
+        )}
+
+        {/* ───────────── Results ───────────── */}
+        {result?.ok && (
+          <div ref={resultsRef} className="space-y-6 pt-4">
+            {/* Style read */}
+            {result.style_analysis && (
+              <div className="card bg-gradient-to-br from-pink-pale via-white to-sky-pale">
+                <div className="section-label mb-3">Style read</div>
+                <p className="text-lg text-ink mb-4">
+                  {result.style_analysis.aesthetic_summary}
+                </p>
+                <div className="flex flex-wrap gap-2 mb-5">
+                  {result.style_analysis.aesthetics.map((a) => (
+                    <span key={a} className="chip">
+                      {a}
+                    </span>
+                  ))}
+                </div>
+                <div className="grid md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="font-semibold text-ink mb-1">Category</div>
+                    <div className="text-gray-600">
+                      {result.style_analysis.l1}
+                      {result.style_analysis.l2_targets.length > 0 && (
+                        <> → {result.style_analysis.l2_targets.join(', ')}</>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-ink mb-1">Priority brands</div>
+                    <div className="text-gray-600">
+                      {result.style_analysis.priority_brands.join(', ') || '—'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-ink mb-1">Style keywords</div>
+                    <div className="text-gray-600">
+                      {result.style_analysis.style_keywords.join(', ')}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-ink mb-1">Silhouettes</div>
+                    <div className="text-gray-600">{result.style_analysis.silhouette_notes}</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* PRIMARY: moodboard-matched vendors */}
+            {result.vendors && result.vendors.length > 0 && (
+              <div>
+                <div className="flex items-baseline justify-between mb-4 px-1">
+                  <h2 className="font-display text-3xl md:text-4xl text-ink">
+                    <span className="gradient-text">Moodboard matches</span>
+                  </h2>
+                  <span className="text-sm text-gray-500">Ranked by brand + style DNA</span>
+                </div>
+                <div className="space-y-3">
+                  {result.vendors.map((v) => (
+                    <div key={v.vendor} className="card flex items-center gap-5 py-5">
+                      <div className="font-display text-4xl md:text-5xl gradient-text w-14 text-center">
+                        {v.rank}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-baseline gap-3 flex-wrap">
+                          <a
+                            href={`https://joinfleek.com/vendors/${v.vendor}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-semibold text-lg text-ink hover:text-pink-hot underline decoration-pink-cotton decoration-2 underline-offset-4"
+                          >
+                            {v.vendor}
+                          </a>
+                          <span className="chip">{v.match_score} pts</span>
+                        </div>
+                        <div className="mt-1 text-sm text-gray-500">
+                          {v.total_products.toLocaleString()} products · {v.target_l2_count} in
+                          target · {v.brand_matches} brand matches · {v.y2k_brand_hits} Y2K · {v.keyword_hits} keyword hits
+                        </div>
+                        {v.matched_brands && (
+                          <div className="mt-1 text-sm text-ink">
+                            <span className="font-semibold">Brands: </span>
+                            <span className="text-gray-700">{v.matched_brands}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* SECONDARY: buyer-history vendors */}
+            {result.buyer_history_vendors && result.buyer_history_vendors.length > 0 && (
+              <div>
+                <div className="flex items-baseline justify-between mb-4 px-1 mt-10">
+                  <h2 className="font-display text-3xl md:text-4xl text-ink">
+                    <span className="gradient-text italic">Previously loved</span>
+                  </h2>
+                  <span className="text-sm text-gray-500">
+                    {buyerName ? `${buyerName}'s` : 'Buyer\u2019s'} top-used vendors
+                  </span>
+                </div>
+                <div className="grid md:grid-cols-3 gap-4">
+                  {result.buyer_history_vendors.map((v) => (
+                    <div key={v.vendor} className="card py-5">
+                      <div className="flex items-baseline gap-2 mb-2">
+                        <span className="font-display text-3xl gradient-text">#{v.rank}</span>
+                        <a
+                          href={`https://joinfleek.com/vendors/${v.vendor}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-semibold text-ink hover:text-pink-hot underline decoration-pink-cotton decoration-2 underline-offset-4"
+                        >
+                          {v.vendor}
+                        </a>
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        <div>
+                          <span className="font-semibold text-ink">{v.order_count}</span>{' '}
+                          {v.order_count === 1 ? 'order' : 'orders'}
+                        </div>
+                        {v.last_ordered_at && (
+                          <div>
+                            Last:{' '}
+                            {new Date(v.last_ordered_at).toLocaleDateString('en-GB', {
+                              month: 'short',
+                              year: 'numeric'
+                            })}
+                          </div>
+                        )}
+                        {typeof v.total_spend_gbp === 'number' && v.total_spend_gbp > 0 && (
+                          <div>Spend: £{Math.round(v.total_spend_gbp).toLocaleString()}</div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Empty state if email was provided but no history found */}
+            {buyerEmail &&
+              (!result.buyer_history_vendors || result.buyer_history_vendors.length === 0) && (
+                <div className="card bg-mist border-dashed text-center text-gray-500 text-sm">
+                  No previous order history found for <span className="font-mono">{buyerEmail}</span>.
+                </div>
+              )}
+          </div>
+        )}
+      </section>
+
+      <footer className="border-t border-gray-100 py-8 text-center text-xs text-gray-400">
+        Mood Match · a Fleek internal tool · {new Date().getFullYear()}
+      </footer>
+    </main>
+  );
+}
