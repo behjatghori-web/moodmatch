@@ -332,70 +332,59 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .loader p { color: var(--muted); font-size: 14px; }
-    /* ── Style analysis card ── */
-    .style-card {
+    /* ── Moodboard read card ── */
+    .moodboard-read {
       background: linear-gradient(135deg, var(--pink-light) 0%, var(--blue-light) 50%, #f5f0ff 100%);
       border: 1.5px solid var(--pink-mid);
       border-radius: 20px;
       padding: 24px 24px 20px;
       margin-bottom: 20px;
     }
-    .style-card-title {
+    .moodboard-read-title {
       font-size: 13px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.8px;
       color: var(--pink);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
-    .style-aesthetic {
+    .moodboard-aesthetic {
       font-size: 22px;
       font-weight: 700;
       color: var(--text);
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       letter-spacing: -0.5px;
     }
-    .style-aesthetic .grad {
+    .moodboard-aesthetic .grad {
       background: linear-gradient(90deg, var(--pink), var(--purple), var(--blue));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    .style-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+    .moodboard-description {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #374151;
+      margin-bottom: 16px;
     }
-    @media (max-width: 520px) { .style-grid { grid-template-columns: 1fr; } }
-    .style-row {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-    .style-row-label {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: var(--pink);
-    }
-    .style-row-value {
-      font-size: 13px;
-      color: var(--text);
-      font-weight: 500;
-    }
-    .style-tags {
+    .moodboard-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 14px;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--muted);
       padding-top: 14px;
-      border-top: 1px solid rgba(244,114,182,0.15);
+      border-top: 1px solid rgba(244,114,182,0.12);
+    }
+    .moodboard-meta strong {
+      color: var(--text);
+      font-weight: 600;
     }
     .chip {
+      display: inline-block;
       background: white;
       border: 1.5px solid var(--pink-mid);
       border-radius: 20px;
@@ -405,9 +394,6 @@
       font-weight: 500;
     }
     .chip strong { color: var(--text); }
-    .chip.chip-color {
-      border-color: var(--blue-mid);
-    }
     /* ── Vendor cards ── */
     .results-header {
       display: flex;
@@ -460,41 +446,26 @@
       color: var(--muted);
       margin-bottom: 6px;
     }
-    .vendor-why {
-      font-size: 12px;
-      color: #6b7280;
-      line-height: 1.5;
-      margin-top: 2px;
-    }
-    .vendor-why .why-signal {
-      display: inline-block;
-      background: var(--pink-light);
-      border-radius: 6px;
-      padding: 1px 6px;
-      font-size: 11px;
-      margin-right: 4px;
-      margin-bottom: 3px;
-      color: var(--pink);
-      font-weight: 600;
-    }
-    .vendor-why .why-signal.y2k { background: #fce7f3; color: #be185d; }
-    .vendor-why .why-signal.designer { background: #f5f3ff; color: #7c3aed; }
-    .vendor-why .why-signal.indemand { background: #eff6ff; color: #2563eb; }
-    .vendor-why .why-signal.keyword { background: #f0fdf4; color: #16a34a; }
-    .vendor-why .why-signal.catalog { background: #fefce8; color: #ca8a04; }
-    .vendor-right { text-align: right; flex-shrink: 0; }
-    .score {
-      background: linear-gradient(135deg, var(--pink-light), var(--blue-light));
-      border: 1.5px solid var(--pink-mid);
-      border-radius: 8px;
-      padding: 4px 10px;
+    .vendor-desc {
       font-size: 13px;
-      font-weight: 700;
-      color: var(--pink);
-      margin-bottom: 4px;
+      color: #6b7280;
+      line-height: 1.55;
+      margin-top: 4px;
     }
-    .origin { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    .products { font-size: 11px; color: #d1d5db; margin-top: 2px; }
+    .vendor-right { text-align: right; flex-shrink: 0; }
+    .vendor-products {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .vendor-link {
+      display: inline-block;
+      font-size: 11px;
+      color: var(--pink);
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+    .vendor-link:hover { text-decoration: underline; }
 
     /* ── Previously loved (history) ── */
     .history-section { margin-top: 28px; }
@@ -631,7 +602,7 @@
 
 <script>
   // ── CONFIG — swap to /webhook/ (remove -test) after publishing in n8n ──
-  const WEBHOOK_URL = 'https://n8n.joinfleek.com/webhook/moodmatch';
+  const WEBHOOK_URL = 'https://n8n.joinfleek.com/webhook-test/moodmatch';
 
   // ── Uploaded files (base64) ──
   let uploadedImages = [];
@@ -706,7 +677,7 @@
     content.innerHTML     = '';
     results.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    const images = [
+    const imageUrls = [
       ...uploadedImages.map(img => img.dataUrl),
       ...urlImages
     ].slice(0, 8);
@@ -715,7 +686,7 @@
       const res = await fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ images, description, buyerName, buyerEmail, maxVendors })
+        body: JSON.stringify({ imageUrls, description, buyerName, buyerEmail, maxVendors })
       });
       if (!res.ok) throw new Error(`Error ${res.status} — check n8n workflow is active`);
       const data = await res.json();
@@ -737,66 +708,50 @@
     const vendors = data.vendor_shortlist || data.vendors || [];
     const history = data.buyer_history_vendors || data.previously_used_vendors || [];
 
-    // ── Style analysis card (the "definition" of the moodboard) ──
-    let styleHtml = '';
-    const hasStyleData = s.aesthetic || s.category || s.era;
-    if (hasStyleData) {
-      styleHtml = `<div class="style-card">
-        <div class="style-card-title">✦ Moodboard Analysis</div>
-        ${s.aesthetic ? `<div class="style-aesthetic"><span class="grad">${esc(s.aesthetic)}</span></div>` : ''}
-        <div class="style-grid">
-          ${s.category ? `<div class="style-row"><span class="style-row-label">Category</span><span class="style-row-value">${esc(s.category)}${s.subcategories ? ' — ' + esc(s.subcategories) : ''}</span></div>` : ''}
-          ${s.era ? `<div class="style-row"><span class="style-row-label">Era</span><span class="style-row-value">${esc(s.era)}</span></div>` : ''}
-          ${s.gender ? `<div class="style-row"><span class="style-row-label">Gender</span><span class="style-row-value">${esc(s.gender)}</span></div>` : ''}
-          ${s.key_brands && s.key_brands !== 'none identified' ? `<div class="style-row"><span class="style-row-label">Detected Brands</span><span class="style-row-value">${esc(s.key_brands)}</span></div>` : ''}
-        </div>
-        <div class="style-tags">
-          ${(s.style_keywords || '').split(',').map(k => k.trim()).filter(Boolean).map(k => `<div class="chip">${esc(k)}</div>`).join('')}
-          ${(s.color_palette || '').split(',').map(c => c.trim()).filter(Boolean).map(c => `<div class="chip chip-color">${esc(c)}</div>`).join('')}
+    // ── Moodboard read card — describes what's in the images ──
+    let moodboardHtml = '';
+    const hasRead = s.moodboard_description || s.aesthetic;
+    if (hasRead) {
+      moodboardHtml = `<div class="moodboard-read">
+        <div class="moodboard-read-title">✦ Moodboard Read</div>
+        ${s.aesthetic ? `<div class="moodboard-aesthetic"><span class="grad">${esc(s.aesthetic)}</span></div>` : ''}
+        ${s.moodboard_description ? `<div class="moodboard-description">${esc(s.moodboard_description)}</div>` : ''}
+        <div class="moodboard-meta">
+          ${s.category ? `<span><strong>Category:</strong> ${esc(s.category)}${s.subcategories ? ' — ' + esc(s.subcategories) : ''}</span>` : ''}
+          ${s.era ? `<span><strong>Era:</strong> ${esc(s.era)}</span>` : ''}
+          ${s.key_brands && s.key_brands !== 'none identified' ? `<span><strong>Brands:</strong> ${esc(s.key_brands)}</span>` : ''}
         </div>
       </div>`;
     }
 
-    // ── Per-vendor "why" builder (reads score breakdown fields) ──
-    function buildWhyHtml(v) {
-      const signals = [];
-      const brands = v._matched_brands || v.matched_brands || '';
-      if (brands) signals.push(`<span class="why-signal indemand">Carries ${esc(brands.split(',').slice(0,3).map(b=>b.trim()).join(', '))}</span>`);
-      const y2k = parseInt(v._y2k_hits || v.y2k_status_hits) || 0;
-      if (y2k > 0) signals.push(`<span class="why-signal y2k">${y2k} Y2K brand${y2k>1?'s':''}</span>`);
-      const des = parseInt(v._designer_hits || v.designer_hits) || 0;
-      if (des > 0) signals.push(`<span class="why-signal designer">${des} designer brand${des>1?'s':''}</span>`);
-      const kw = parseInt(v._keyword_hits || v.keyword_hits) || 0;
-      if (kw > 0) signals.push(`<span class="why-signal keyword">${kw} keyword hit${kw>1?'s':''}</span>`);
-      const l2 = parseInt(v._l2_count || v.target_l2_count) || 0;
-      if (l2 > 0) signals.push(`<span class="why-signal">${l2} subcategory match${l2>1?'es':''}</span>`);
-      const total = parseInt(v.active_products || v.total_products) || 0;
-      if (total > 100) signals.push(`<span class="why-signal catalog">${total} products</span>`);
-      // Fallback: show the plain "why" text from Format Response
-      if (signals.length === 0 && (v.why || v.reason)) return `<span style="font-size:12px;color:#9ca3af">✦ ${esc(v.why || v.reason)}</span>`;
-      return signals.join('');
-    }
-
+    // ── Vendor cards with prose descriptions ──
     const rankClass = i => i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-other';
-    const vendorCards = vendors.map((v, i) => `
-      <div class="vendor-card">
-        <div class="rank-badge ${rankClass(i)}">#${v.rank ?? i + 1}</div>
-        <div class="vendor-info">
-          <div class="vendor-name">${esc(v.vendor_name || v.vendor_handle || v.vendor || 'Unknown vendor')}</div>
-          <div class="vendor-handle">@${esc(v.vendor_handle || v.vendor || '')}</div>
-          <div class="vendor-why">${buildWhyHtml(v)}</div>
-        </div>
-        <div class="vendor-right">
-          ${v.match_score != null ? `<div class="score">${v.match_score} pts</div>` : ''}
-          ${v.origin ? `<div class="origin">${esc(v.origin)}</div>` : ''}
-          ${v.active_products != null ? `<div class="products">${v.active_products} products</div>` : ''}
-        </div>
-      </div>
-    `).join('');
+    const vendorCards = vendors.map((v, i) => {
+      const name = v.vendor_name || v.vendor_handle || v.vendor || 'Unknown vendor';
+      const handle = v.vendor_handle || v.vendor || '';
+      const desc = v.description || v.why || v.reason || '';
+      const products = parseInt(v.active_products || v.total_products) || 0;
+      const url = v.fleek_url || `https://www.joinfleek.com/vendor/${handle}`;
 
-    // Primary: style card + moodboard matches
+      return `
+        <div class="vendor-card">
+          <div class="rank-badge ${rankClass(i)}">#${v.rank ?? i + 1}</div>
+          <div class="vendor-info">
+            <div class="vendor-name">${esc(name)}</div>
+            <div class="vendor-handle">@${esc(handle)}</div>
+            <div class="vendor-desc">${esc(desc)}</div>
+          </div>
+          <div class="vendor-right">
+            <div class="vendor-products">${products} products</div>
+            <a class="vendor-link" href="${esc(url)}" target="_blank">View on Fleek →</a>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Primary: moodboard read + vendor matches
     let html = `
-      ${styleHtml}
+      ${moodboardHtml}
       <div class="results-header">
         <h2>Matches for ${esc(data.buyer || buyerName)}</h2>
         <span class="results-meta">${data.vendors_analyzed || 0} vendors scanned</span>
