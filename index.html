@@ -1,438 +1,848 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Mood Match — by Fleek</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<style>
-  :root {
-    --pink-hot:    #ff2e93;
-    --pink-rose:   #ff5ca7;
-    --pink-bubble: #ffb3d1;
-    --pink-cotton: #ffd6e7;
-    --pink-pale:   #fff0f6;
-    --lilac-soft:  #e9d8ff;
-    --lilac-mid:   #b892ff;
-    --sky-pale:    #e0f2ff;
-    --ink:         #2a1033;
-    --ink-soft:    #5b3a6b;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MoodMatch — Fleek Vendor Finder</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --pink:       #f472b6;
+      --pink-light: #fce7f3;
+      --pink-mid:   #fbcfe8;
+      --blue:       #93c5fd;
+      --blue-light: #eff6ff;
+      --blue-mid:   #bfdbfe;
+      --purple:     #c4b5fd;
+      --bg:         #fafafa;
+      --white:      #ffffff;
+      --text:       #1a1a1a;
+      --muted:      #9ca3af;
+      --border:     #f0e6f6;
+      --card-bg:    #fafafa;
+    }
+    body {
+      font-family: 'DM Sans', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    /* ── Header ── */
+    header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .logo-star { color: var(--pink); font-size: 18px; }
+    .logo span { color: var(--pink); }
+    .fleek-badge {
+      font-size: 11px;
+      background: var(--pink-light);
+      color: var(--pink);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #fff0f8 0%, #eff6ff 50%, #f5f0ff 100%);
+      padding: 56px 24px 48px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '✦';
+      position: absolute; top: 20px; left: 8%;
+      font-size: 24px; color: var(--pink); opacity: 0.4;
+      animation: float 3s ease-in-out infinite;
+    }
+    .hero::after {
+      content: '✦';
+      position: absolute; bottom: 20px; right: 10%;
+      font-size: 18px; color: var(--blue); opacity: 0.5;
+      animation: float 4s ease-in-out infinite reverse;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-8px); }
+    }
+    .hero-sparkles {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: var(--pink);
+      letter-spacing: 4px;
+    }
+    h1 {
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    h1 .grad {
+      background: linear-gradient(90deg, var(--pink), var(--purple), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .hero p + p { margin-top: 6px; }
 
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    color: var(--ink);
-    background:
-      radial-gradient(1200px 600px at 10% -10%, var(--pink-cotton), transparent 60%),
-      radial-gradient(1000px 500px at 110% 10%, var(--lilac-soft), transparent 60%),
-      linear-gradient(180deg, #fff 0%, var(--pink-pale) 100%);
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
+    /* ── Main layout ── */
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+    /* ── Cards ── */
+    .card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 12px rgba(244, 114, 182, 0.06);
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--pink);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 7px;
+    }
+    input[type="text"], input[type="email"], input[type="url"], textarea, select {
+      width: 100%;
+      background: #fafafa;
+      border: 1.5px solid #f0e6f6;
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 14px;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 3px rgba(244,114,182,0.1);
+      background: white;
+    }
+    textarea { resize: vertical; min-height: 72px; }
+    .field { margin-bottom: 18px; }
+    .field:last-child { margin-bottom: 0; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
+    /* ── Upload zone ── */
+    .upload-zone {
+      border: 2px dashed var(--pink-mid);
+      border-radius: 16px;
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--pink-light);
+      position: relative;
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--pink);
+      background: #fde8f4;
+    }
+    .upload-zone input[type="file"] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer;
+      width: 100%; height: 100%;
+      border: none; padding: 0; background: none;
+    }
+    .upload-icon { font-size: 32px; margin-bottom: 10px; }
+    .upload-zone p {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--pink);
+      margin-bottom: 4px;
+    }
+    .upload-zone small { color: var(--muted); font-size: 12px; }
+    /* ── Image previews ── */
+    .preview-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .preview-item {
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+    .preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid var(--pink-mid);
+    }
+    .preview-remove {
+      position: absolute;
+      top: -6px; right: -6px;
+      background: var(--pink);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px; height: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    /* ── OR divider ── */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 16px 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .or-divider::before, .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    /* ── Links section ── */
+    .links-section { margin-top: 18px; }
+    .links-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--pink);
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+    .url-textarea {
+      width: 100%;
+      min-height: 110px;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      line-height: 1.6;
+      resize: vertical;
+      box-sizing: border-box;
+      transition: border-color .2s;
+    }
+    .url-textarea:focus {
+      outline: none;
+      border-color: var(--pink);
+      box-shadow: 0 0 0 3px rgba(255,105,180,.12);
+    }
+    .url-textarea::placeholder { color: var(--muted); }
+    .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .hint strong { color: #6b7280; }
+    /* ── Submit button ── */
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--pink), #e879f9);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-family: inherit;
+      letter-spacing: 0.2px;
+      box-shadow: 0 4px 20px rgba(244,114,182,0.35);
+      margin-top: 4px;
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(244,114,182,0.45); }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-submit:disabled {
+      background: #e5e7eb;
+      color: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    /* ── Results ── */
+    #results { display: none; margin-top: 28px; }
+    .loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 20px;
+      gap: 16px;
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--pink-mid);
+      border-top-color: var(--pink);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader p { color: var(--muted); font-size: 14px; }
+    /* ── Style analysis card ── */
+    .style-card {
+      background: linear-gradient(135deg, var(--pink-light) 0%, var(--blue-light) 50%, #f5f0ff 100%);
+      border: 1.5px solid var(--pink-mid);
+      border-radius: 20px;
+      padding: 24px 24px 20px;
+      margin-bottom: 20px;
+    }
+    .style-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--pink);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .style-aesthetic {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 14px;
+      letter-spacing: -0.5px;
+    }
+    .style-aesthetic .grad {
+      background: linear-gradient(90deg, var(--pink), var(--purple), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .style-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 520px) { .style-grid { grid-template-columns: 1fr; } }
+    .style-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .style-row-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--pink);
+    }
+    .style-row-value {
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500;
+    }
+    .style-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(244,114,182,0.15);
+    }
+    .chip {
+      background: white;
+      border: 1.5px solid var(--pink-mid);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 11px;
+      color: #6b7280;
+      font-weight: 500;
+    }
+    .chip strong { color: var(--text); }
+    .chip.chip-color {
+      border-color: var(--blue-mid);
+    }
+    /* ── Vendor cards ── */
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .results-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .results-meta { font-size: 12px; color: var(--muted); }
+    .vendor-list { display: flex; flex-direction: column; gap: 12px; }
+    .vendor-card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .vendor-card:hover {
+      border-color: var(--pink-mid);
+      box-shadow: 0 4px 16px rgba(244,114,182,0.1);
+    }
+    .rank-badge {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .rank-1 { background: linear-gradient(135deg,#fce7f3,#fbcfe8); color: var(--pink); }
+    .rank-2 { background: linear-gradient(135deg,#eff6ff,#bfdbfe); color: #3b82f6; }
+    .rank-3 { background: linear-gradient(135deg,#f5f3ff,#ddd6fe); color: #7c3aed; }
+    .rank-other { background: #f9fafb; color: #9ca3af; }
+    .vendor-info { flex: 1; min-width: 0; }
+    .vendor-name {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .vendor-handle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .vendor-why {
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 1.5;
+      margin-top: 2px;
+    }
+    .vendor-why .why-signal {
+      display: inline-block;
+      background: var(--pink-light);
+      border-radius: 6px;
+      padding: 1px 6px;
+      font-size: 11px;
+      margin-right: 4px;
+      margin-bottom: 3px;
+      color: var(--pink);
+      font-weight: 600;
+    }
+    .vendor-why .why-signal.y2k { background: #fce7f3; color: #be185d; }
+    .vendor-why .why-signal.designer { background: #f5f3ff; color: #7c3aed; }
+    .vendor-why .why-signal.indemand { background: #eff6ff; color: #2563eb; }
+    .vendor-why .why-signal.keyword { background: #f0fdf4; color: #16a34a; }
+    .vendor-why .why-signal.catalog { background: #fefce8; color: #ca8a04; }
+    .vendor-right { text-align: right; flex-shrink: 0; }
+    .score {
+      background: linear-gradient(135deg, var(--pink-light), var(--blue-light));
+      border: 1.5px solid var(--pink-mid);
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--pink);
+      margin-bottom: 4px;
+    }
+    .origin { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .products { font-size: 11px; color: #d1d5db; margin-top: 2px; }
 
-  .font-display { font-family: 'Instrument Serif', serif; font-weight: 400; letter-spacing: -0.01em; }
+    /* ── Previously loved (history) ── */
+    .history-section { margin-top: 28px; }
+    .history-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px;
+    }
+    .history-header h2 {
+      font-size: 17px; font-weight: 700;
+    }
+    .history-header .badge-secondary {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.6px;
+      background: var(--blue-light); color: #3b82f6;
+      padding: 3px 8px; border-radius: 20px;
+    }
+    .history-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    }
+    @media (max-width: 640px) { .history-grid { grid-template-columns: 1fr; } }
+    .history-card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 18px;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .history-card:hover {
+      border-color: var(--blue-mid);
+      box-shadow: 0 4px 16px rgba(147,197,253,0.15);
+    }
+    .history-card .h-name { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+    .history-card .kv { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); padding: 3px 0; }
+    .history-card .kv strong { color: var(--text); font-weight: 600; }
+    .empty-state {
+      text-align: center; color: var(--muted); font-size: 13px;
+      padding: 24px; background: var(--bg); border-radius: 14px;
+      border: 1px dashed var(--border);
+    }
 
-  .gradient-text {
-    background: linear-gradient(90deg, var(--pink-hot) 0%, var(--lilac-mid) 60%, #7ab8ff 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
-  /* Header */
-  header {
-    position: sticky; top: 0; z-index: 20;
-    backdrop-filter: saturate(140%) blur(10px);
-    background: rgba(255,255,255,0.7);
-    border-bottom: 1px solid rgba(255,46,147,0.08);
-  }
-  .header-inner {
-    max-width: 1120px; margin: 0 auto; padding: 14px 24px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .logo { font-size: 28px; line-height: 1; }
-  .chip {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 6px 12px; border-radius: 999px;
-    background: #fff; border: 1px solid var(--pink-cotton);
-    font-size: 12px; font-weight: 500; color: var(--ink-soft);
-    box-shadow: 0 2px 10px rgba(255,46,147,0.06);
-  }
-
-  /* Layout */
-  main { max-width: 1120px; margin: 0 auto; padding: 40px 24px 80px; }
-  .hero { text-align: center; margin: 28px 0 40px; }
-  .hero h1 { font-size: clamp(44px, 7vw, 76px); margin: 0 0 14px; line-height: 1.02; }
-  .hero p { color: var(--ink-soft); font-size: 18px; margin: 0; }
-
-  /* Cards */
-  .card {
-    background: #fff; border-radius: 24px;
-    border: 1px solid rgba(255,46,147,0.1);
-    box-shadow: 0 20px 60px rgba(184,146,255,0.14), 0 4px 20px rgba(255,46,147,0.05);
-    padding: 28px;
-    margin-bottom: 22px;
-  }
-  .section-label {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--pink-hot);
-    margin-bottom: 14px;
-  }
-  .sparkle::before { content: '✦'; color: var(--lilac-mid); margin-right: 6px; }
-
-  /* Dropzone */
-  .dropzone {
-    border: 2px dashed var(--pink-bubble);
-    border-radius: 20px; padding: 36px; text-align: center;
-    background: linear-gradient(180deg, #fff 0%, var(--pink-pale) 100%);
-    cursor: pointer; transition: all .15s ease;
-  }
-  .dropzone:hover { border-color: var(--pink-hot); transform: translateY(-1px); }
-  .dropzone.drag { border-color: var(--pink-hot); background: var(--pink-cotton); }
-  .dropzone .emoji { font-size: 44px; }
-  .dropzone .hint { color: var(--ink-soft); font-size: 14px; margin-top: 8px; }
-  .thumbs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
-  .thumb { position: relative; width: 88px; height: 88px; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 14px rgba(255,46,147,0.12); }
-  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .thumb button {
-    position: absolute; top: 4px; right: 4px;
-    width: 22px; height: 22px; border-radius: 999px; border: none;
-    background: rgba(42,16,51,0.7); color: #fff; cursor: pointer; font-size: 14px; line-height: 1;
-  }
-
-  /* Form */
-  .grid { display: grid; gap: 18px; grid-template-columns: 1fr 1fr; }
-  @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
-  .field { display: flex; flex-direction: column; gap: 8px; }
-  .field.full { grid-column: 1 / -1; }
-  .field-label {
-    font-size: 13px; font-weight: 600; color: var(--ink);
-  }
-  .field-label .hint-inline { color: var(--ink-soft); font-weight: 400; margin-left: 6px; }
-  .field-input, .field-select, textarea {
-    width: 100%;
-    padding: 12px 14px;
-    border-radius: 14px;
-    border: 1px solid var(--pink-cotton);
-    background: #fff;
-    font: inherit; color: var(--ink);
-    transition: border-color .15s, box-shadow .15s;
-  }
-  .field-input:focus, .field-select:focus, textarea:focus {
-    outline: none;
-    border-color: var(--pink-rose);
-    box-shadow: 0 0 0 4px rgba(255,92,167,0.15);
-  }
-  textarea { min-height: 110px; resize: vertical; }
-  .field-select {
-    appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ff2e93' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-    background-repeat: no-repeat; background-position: right 14px center;
-    padding-right: 38px;
-  }
-
-  /* CTA */
-  .cta {
-    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-    width: 100%;
-    padding: 16px 24px; border-radius: 16px; border: none;
-    font: 600 16px/1 'Inter', sans-serif; color: #fff; cursor: pointer;
-    background: linear-gradient(90deg, var(--pink-hot), var(--lilac-mid));
-    box-shadow: 0 10px 30px rgba(255,46,147,0.3);
-    transition: transform .1s, box-shadow .15s, opacity .15s;
-  }
-  .cta:hover { transform: translateY(-1px); box-shadow: 0 14px 36px rgba(255,46,147,0.38); }
-  .cta:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-  /* Results */
-  .results { margin-top: 32px; }
-  .vendor-row {
-    display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
-    padding: 16px 0; border-bottom: 1px dashed var(--pink-cotton);
-  }
-  .vendor-row:last-child { border-bottom: none; }
-  .vendor-name { font-weight: 600; font-size: 16px; }
-  .vendor-meta { color: var(--ink-soft); font-size: 13px; margin-top: 4px; }
-  .score-pill {
-    flex-shrink: 0;
-    padding: 6px 12px; border-radius: 999px;
-    background: linear-gradient(90deg, var(--pink-cotton), var(--lilac-soft));
-    color: var(--ink); font-size: 12px; font-weight: 600;
-  }
-
-  .history-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
-  }
-  @media (max-width: 700px) { .history-grid { grid-template-columns: 1fr; } }
-  .history-card {
-    padding: 18px; border-radius: 18px;
-    background: linear-gradient(180deg, #fff, var(--sky-pale));
-    border: 1px solid rgba(184,146,255,0.25);
-  }
-  .history-card .name { font-weight: 600; font-size: 15px; margin-bottom: 10px; }
-  .history-card .kv { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-soft); padding: 4px 0; }
-  .history-card .kv strong { color: var(--ink); font-weight: 600; }
-
-  .error {
-    background: #fff5f7; border: 1px solid #ffb3d1; color: #b30057;
-    padding: 14px 16px; border-radius: 14px; font-size: 14px; margin-top: 16px;
-  }
-  .empty { color: var(--ink-soft); font-size: 14px; font-style: italic; padding: 14px 0; }
-
-  .loading-dots::after {
-    content: '...';
-    animation: dots 1.4s steps(4, end) infinite;
-  }
-  @keyframes dots { 0%{content:''} 25%{content:'.'} 50%{content:'..'} 75%{content:'...'} }
-
-  footer { text-align: center; color: var(--ink-soft); font-size: 12px; padding: 20px; }
-</style>
+    .error-box {
+      background: #fff5f5;
+      border: 1.5px solid #fecaca;
+      border-radius: 14px;
+      padding: 20px;
+      color: #ef4444;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
 
 <header>
-  <div class="header-inner">
-    <div style="display:flex; align-items:center; gap:12px;">
-      <span class="logo font-display gradient-text">Mood Match</span>
-    </div>
-    <span class="chip"><span class="sparkle"></span> by Fleek</span>
+  <div class="logo">
+    <span class="logo-star">✦</span>
+    Mood<span>Match</span>
   </div>
+  <div class="fleek-badge">by Fleek</div>
 </header>
 
-<main>
-  <section class="hero">
-    <h1 class="font-display">Find your <span class="gradient-text">perfect vendors!</span></h1>
-    <p>Mood Match is your new Y2K bestie :)</p>
-  </section>
+<div class="hero">
+  <div class="hero-sparkles">✦ &nbsp; ✦ &nbsp; ✦</div>
+  <h1>Find your <span class="grad">perfect vendors!</span></h1>
+  <p>your new Y2K bestie :)</p>
+  <p>Upload a moodboard or paste image links — get matched vendors from the Fleek Womenswear catalog instantly.</p>
+</div>
+
+<div class="container">
 
   <!-- Moodboard -->
-  <section class="card">
-    <div class="section-label sparkle">Moodboard</div>
-    <label class="dropzone" id="dropzone">
-      <input id="file-input" type="file" accept="image/*" multiple style="display:none" />
-      <div class="emoji">🖼️</div>
-      <div style="font-weight:600; margin-top:6px;">Drop your vibe here</div>
-      <div class="hint">or click to browse — PNG, JPG, WebP</div>
-    </label>
-    <div class="thumbs" id="thumbs"></div>
-  </section>
+  <div class="card">
+    <div class="card-title">✦ Your Moodboard</div>
+
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" id="fileInput" accept="image/*" multiple />
+      <div class="upload-icon">🖼️</div>
+      <p>Drop images here or click to upload</p>
+      <small>JPG, PNG, WEBP — up to 8 images</small>
+    </div>
+
+    <div class="preview-grid" id="previewGrid"></div>
+
+    <div class="or-divider">or paste image links</div>
+
+    <div class="links-section">
+      <label class="links-label">🔗 Image URLs</label>
+      <textarea id="urlTextarea" class="url-textarea" placeholder="Paste image URLs here, one per line&#10;&#10;e.g. https://i.pinimg.com/...&#10;     https://i.pinimg.com/..."></textarea>
+      <p class="hint">Tip: right-click any Pinterest image → <strong>Copy image address</strong></p>
+    </div>
+  </div>
 
   <!-- Details -->
-  <section class="card">
-    <div class="section-label sparkle">The details</div>
-    <div class="grid">
+  <div class="card">
+    <div class="card-title">✦ Details</div>
+    <div class="row">
       <div class="field">
-        <label class="field-label" for="buyer-name">Buyer name</label>
-        <input id="buyer-name" class="field-input" type="text" placeholder="e.g. Sophia @ Urban Outfitters" />
+        <label>Buyer Name</label>
+        <input type="text" id="buyerName" placeholder="e.g. Sarah from NYC" />
       </div>
       <div class="field">
-        <label class="field-label" for="vendors-to-return">Vendors to return</label>
-        <select id="vendors-to-return" class="field-select">
-          <option value="3">3</option>
-          <option value="5" selected>5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
+        <label>Vendors to return</label>
+        <select id="maxVendors">
+          <option value="3">Top 3</option>
+          <option value="5" selected>Top 5</option>
+          <option value="8">Top 8</option>
+          <option value="10">Top 10</option>
         </select>
       </div>
-      <div class="field full">
-        <label class="field-label" for="buyer-email">
-          Buyer email
-          <span class="hint-inline">optional — pulls their previous vendors</span>
-        </label>
-        <input id="buyer-email" class="field-input" type="email" placeholder="buyer@brand.com" />
-      </div>
-      <div class="field full">
-        <label class="field-label" for="style-description">Style description</label>
-        <textarea id="style-description" placeholder="Beaded cami tops, early-2000s party girl, metallic + pastel palette, low-rise vibes..."></textarea>
-      </div>
     </div>
-    <div style="margin-top: 22px;">
-      <button id="submit-btn" class="cta">
-        <span class="sparkle"></span>
-        <span id="cta-label">Find my vendors</span>
-      </button>
+    <div class="field">
+      <label>Buyer Email <span style="font-weight:400;text-transform:none;color:#9ca3af">(optional — pulls their previously used vendors)</span></label>
+      <input type="email" id="buyerEmail" placeholder="buyer@brand.com" />
     </div>
-    <div id="error-box"></div>
-  </section>
+    <div class="field">
+      <label>Style Description <span style="font-weight:400;text-transform:none;color:#9ca3af">(optional)</span></label>
+      <textarea id="description" placeholder="e.g. Y2K glam, velour tracksuits, Juicy Couture vibes, 2000s mall girl..."></textarea>
+    </div>
+  </div>
+
+  <button class="btn-submit" id="submitBtn" onclick="runMatcher()">
+    ✦ &nbsp; Find Matching Vendors
+  </button>
 
   <!-- Results -->
-  <div class="results" id="results"></div>
-</main>
+  <div id="results">
+    <div class="loader" id="loader">
+      <div class="spinner"></div>
+      <p>Analysing style & matching vendors...</p>
+    </div>
+    <div id="resultsContent"></div>
+  </div>
 
-<footer>Mood Match · internal tool · Fleek 2026</footer>
+</div>
 
 <script>
-  // -------- CONFIG --------
-  // Point this at your n8n webhook URL directly.
-  // If your n8n is on a different domain, make sure CORS is allowed on the webhook node,
-  // OR keep using the Vercel /api/moodmatch proxy.
-  const ENDPOINT = "https://n8n.joinfleek.com/webhook/moodmatch";
+  // ── CONFIG — swap to /webhook/ (remove -test) after publishing in n8n ──
+  const WEBHOOK_URL = 'https://n8n.joinfleek.com/webhook/vendor-matcher';
 
-  // -------- STATE --------
-  const images = []; // { name, dataUrl }
+  // ── Uploaded files (base64) ──
+  let uploadedImages = [];
+  const uploadZone  = document.getElementById('uploadZone');
+  const fileInput   = document.getElementById('fileInput');
+  const previewGrid = document.getElementById('previewGrid');
 
-  // -------- DOM --------
-  const dropzone = document.getElementById('dropzone');
-  const fileInput = document.getElementById('file-input');
-  const thumbs = document.getElementById('thumbs');
-  const submitBtn = document.getElementById('submit-btn');
-  const ctaLabel = document.getElementById('cta-label');
-  const errorBox = document.getElementById('error-box');
-  const resultsEl = document.getElementById('results');
+  uploadZone.addEventListener('dragover',  e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+    handleFiles([...e.dataTransfer.files]);
+  });
+  fileInput.addEventListener('change', () => handleFiles([...fileInput.files]));
 
-  // -------- DROPZONE --------
-  dropzone.addEventListener('click', () => fileInput.click());
-  fileInput.addEventListener('change', e => handleFiles(e.target.files));
-
-  ['dragenter','dragover'].forEach(ev =>
-    dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.add('drag'); })
-  );
-  ['dragleave','drop'].forEach(ev =>
-    dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.remove('drag'); })
-  );
-  dropzone.addEventListener('drop', e => handleFiles(e.dataTransfer.files));
-
-  function handleFiles(fileList) {
-    Array.from(fileList).forEach(file => {
-      if (!file.type.startsWith('image/')) return;
+  function handleFiles(files) {
+    files.filter(f => f.type.startsWith('image/'))
+         .slice(0, 8 - uploadedImages.length)
+         .forEach(file => {
       const reader = new FileReader();
-      reader.onload = () => {
-        images.push({ name: file.name, dataUrl: reader.result });
-        renderThumbs();
+      reader.onload = e => {
+        uploadedImages.push({ name: file.name, dataUrl: e.target.result });
+        renderPreviews();
       };
       reader.readAsDataURL(file);
     });
   }
 
-  function renderThumbs() {
-    thumbs.innerHTML = '';
-    images.forEach((img, i) => {
-      const el = document.createElement('div');
-      el.className = 'thumb';
-      el.innerHTML = `<img src="${img.dataUrl}" alt="${img.name}" /><button aria-label="remove" data-i="${i}">×</button>`;
-      el.querySelector('button').addEventListener('click', ev => {
-        ev.stopPropagation();
-        const idx = Number(ev.currentTarget.dataset.i);
-        images.splice(idx, 1);
-        renderThumbs();
-      });
-      thumbs.appendChild(el);
-    });
+  function renderPreviews() {
+    previewGrid.innerHTML = uploadedImages.map((img, i) => `
+      <div class="preview-item">
+        <img src="${img.dataUrl}" alt="${img.name}" />
+        <button class="preview-remove" onclick="removeImage(${i})">×</button>
+      </div>
+    `).join('');
   }
 
-  // -------- SUBMIT --------
-  submitBtn.addEventListener('click', async () => {
-    errorBox.innerHTML = '';
-    resultsEl.innerHTML = '';
+  function removeImage(i) {
+    uploadedImages.splice(i, 1);
+    renderPreviews();
+  }
 
-    const buyerName = document.getElementById('buyer-name').value.trim();
-    const buyerEmail = document.getElementById('buyer-email').value.trim();
-    const vendorsToReturn = Number(document.getElementById('vendors-to-return').value);
-    const brief = document.getElementById('style-description').value.trim();
+  function getUrlInputs() {
+    return document.getElementById('urlTextarea').value
+      .split('\n').map(l => l.trim())
+      .filter(l => l.startsWith('http'));
+  }
 
-    if (images.length === 0 && !brief) {
-      showError('Add at least one moodboard image or write a style description.');
+  // ── Run ──
+  async function runMatcher() {
+    const urlImages   = getUrlInputs();
+    const description = document.getElementById('description').value.trim();
+    const buyerName   = document.getElementById('buyerName').value.trim() || 'Buyer';
+    const buyerEmail  = document.getElementById('buyerEmail').value.trim();
+    const maxVendors  = parseInt(document.getElementById('maxVendors').value);
+
+    if (uploadedImages.length === 0 && urlImages.length === 0 && !description) {
+      alert('Please upload an image, paste a URL, or add a style description ✦');
       return;
     }
 
-    submitBtn.disabled = true;
-    ctaLabel.innerHTML = 'Matching<span class="loading-dots"></span>';
+    const btn     = document.getElementById('submitBtn');
+    const results = document.getElementById('results');
+    const loader  = document.getElementById('loader');
+    const content = document.getElementById('resultsContent');
+
+    btn.disabled = true;
+    btn.textContent = 'Matching...';
+    results.style.display = 'block';
+    loader.style.display  = 'flex';
+    content.innerHTML     = '';
+    results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    const imageUrls = [
+      ...uploadedImages.map(img => img.dataUrl),
+      ...urlImages
+    ].slice(0, 8);
 
     try {
-      const res = await fetch(ENDPOINT, {
+      const res = await fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          images: images.map(i => i.dataUrl),
-          brief,
-          buyer_name: buyerName,
-          buyer_email: buyerEmail,
-          vendors_to_return: vendorsToReturn,
-        }),
+        body: JSON.stringify({ imageUrls, description, buyerName, buyerEmail, maxVendors })
       });
-
-      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+      if (!res.ok) throw new Error(`Error ${res.status} — check n8n workflow is active`);
       const data = await res.json();
-      renderResults(data, buyerEmail);
+      loader.style.display = 'none';
+      renderResults(data, buyerName, buyerEmail);
     } catch (err) {
-      showError(err.message || 'Something went wrong. Please try again.');
-    } finally {
-      submitBtn.disabled = false;
-      ctaLabel.textContent = 'Find my vendors';
+      loader.style.display = 'none';
+      content.innerHTML = `<div class="error-box">⚠️ ${err.message}</div>`;
     }
-  });
 
-  function showError(msg) {
-    errorBox.innerHTML = `<div class="error">${msg}</div>`;
+    btn.disabled = false;
+    btn.innerHTML = '✦ &nbsp; Find Matching Vendors';
   }
 
-  // -------- RENDER RESULTS --------
-  function renderResults(data, buyerEmail) {
-    const vendors = (data && data.vendors) || [];
-    const history = (data && data.buyer_history_vendors) || [];
-    const styleSummary = data && data.style_summary;
+  // ── Render results ──
+  function renderResults(data, buyerName, buyerEmail) {
+    const content = document.getElementById('resultsContent');
+    const s = data.style_summary || {};
+    const vendors = data.vendor_shortlist || data.vendors || [];
+    const history = data.buyer_history_vendors || data.previously_used_vendors || [];
 
-    let html = '';
+    // ── Style analysis card (the "definition" of the moodboard) ──
+    let styleHtml = '';
+    const hasStyleData = s.aesthetic || s.category || s.era;
+    if (hasStyleData) {
+      styleHtml = `<div class="style-card">
+        <div class="style-card-title">✦ Moodboard Analysis</div>
+        ${s.aesthetic ? `<div class="style-aesthetic"><span class="grad">${esc(s.aesthetic)}</span></div>` : ''}
+        <div class="style-grid">
+          ${s.category ? `<div class="style-row"><span class="style-row-label">Category</span><span class="style-row-value">${esc(s.category)}${s.subcategories ? ' — ' + esc(s.subcategories) : ''}</span></div>` : ''}
+          ${s.era ? `<div class="style-row"><span class="style-row-label">Era</span><span class="style-row-value">${esc(s.era)}</span></div>` : ''}
+          ${s.gender ? `<div class="style-row"><span class="style-row-label">Gender</span><span class="style-row-value">${esc(s.gender)}</span></div>` : ''}
+          ${s.key_brands && s.key_brands !== 'none identified' ? `<div class="style-row"><span class="style-row-label">Detected Brands</span><span class="style-row-value">${esc(s.key_brands)}</span></div>` : ''}
+        </div>
+        <div class="style-tags">
+          ${(s.style_keywords || '').split(',').map(k => k.trim()).filter(Boolean).map(k => `<div class="chip">${esc(k)}</div>`).join('')}
+          ${(s.color_palette || '').split(',').map(c => c.trim()).filter(Boolean).map(c => `<div class="chip chip-color">${esc(c)}</div>`).join('')}
+        </div>
+      </div>`;
+    }
 
-    if (styleSummary) {
+    // ── Per-vendor "why" builder (reads score breakdown fields) ──
+    function buildWhyHtml(v) {
+      const signals = [];
+      const brands = v._matched_brands || v.matched_brands || '';
+      if (brands) signals.push(`<span class="why-signal indemand">Carries ${esc(brands.split(',').slice(0,3).map(b=>b.trim()).join(', '))}</span>`);
+      const y2k = parseInt(v._y2k_hits || v.y2k_status_hits) || 0;
+      if (y2k > 0) signals.push(`<span class="why-signal y2k">${y2k} Y2K brand${y2k>1?'s':''}</span>`);
+      const des = parseInt(v._designer_hits || v.designer_hits) || 0;
+      if (des > 0) signals.push(`<span class="why-signal designer">${des} designer brand${des>1?'s':''}</span>`);
+      const kw = parseInt(v._keyword_hits || v.keyword_hits) || 0;
+      if (kw > 0) signals.push(`<span class="why-signal keyword">${kw} keyword hit${kw>1?'s':''}</span>`);
+      const l2 = parseInt(v._l2_count || v.target_l2_count) || 0;
+      if (l2 > 0) signals.push(`<span class="why-signal">${l2} subcategory match${l2>1?'es':''}</span>`);
+      const total = parseInt(v.active_products || v.total_products) || 0;
+      if (total > 100) signals.push(`<span class="why-signal catalog">${total} products</span>`);
+      // Fallback: show the plain "why" text from Format Response
+      if (signals.length === 0 && (v.why || v.reason)) return `<span style="font-size:12px;color:#9ca3af">✦ ${esc(v.why || v.reason)}</span>`;
+      return signals.join('');
+    }
+
+    const rankClass = i => i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-other';
+    const vendorCards = vendors.map((v, i) => `
+      <div class="vendor-card">
+        <div class="rank-badge ${rankClass(i)}">#${v.rank ?? i + 1}</div>
+        <div class="vendor-info">
+          <div class="vendor-name">${esc(v.vendor_name || v.vendor_handle || v.vendor || 'Unknown vendor')}</div>
+          <div class="vendor-handle">@${esc(v.vendor_handle || v.vendor || '')}</div>
+          <div class="vendor-why">${buildWhyHtml(v)}</div>
+        </div>
+        <div class="vendor-right">
+          ${v.match_score != null ? `<div class="score">${v.match_score} pts</div>` : ''}
+          ${v.origin ? `<div class="origin">${esc(v.origin)}</div>` : ''}
+          ${v.active_products != null ? `<div class="products">${v.active_products} products</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+
+    // Primary: style card + moodboard matches
+    let html = `
+      ${styleHtml}
+      <div class="results-header">
+        <h2>Matches for ${esc(data.buyer || buyerName)}</h2>
+        <span class="results-meta">${data.vendors_analyzed || 0} vendors scanned</span>
+      </div>
+      <div class="vendor-list">
+        ${vendorCards || '<p style="text-align:center;color:#9ca3af;padding:40px">No matches — try adding more images or a description.</p>'}
+      </div>
+    `;
+
+    // Secondary: buyer history (only if email provided)
+    if (buyerEmail) {
       html += `
-        <section class="card">
-          <div class="section-label sparkle">Style read</div>
-          <p style="margin:0; color:var(--ink-soft); line-height:1.55;">${escapeHtml(styleSummary)}</p>
-        </section>
+        <div class="history-section">
+          <div class="history-header">
+            <h2>Previously loved</h2>
+            <span class="badge-secondary">Top 3 from buyer history</span>
+          </div>
+          ${history.length === 0
+            ? `<div class="empty-state">No previous order history found for ${esc(buyerEmail)}</div>`
+            : `<div class="history-grid">${history.map(h => `
+                <div class="history-card">
+                  <div class="h-name">${h.vendor || h.vendor_name || 'Unknown vendor'}</div>
+                  <div class="kv"><span>Orders</span><strong>${h.order_count ?? '—'}</strong></div>
+                  <div class="kv"><span>Last ordered</span><strong>${formatDate(h.last_ordered_at)}</strong></div>
+                  <div class="kv"><span>Total spend</span><strong>${formatGbp(h.total_spend_gbp)}</strong></div>
+                </div>
+              `).join('')}</div>`
+          }
+        </div>
       `;
     }
 
-    // Primary: moodboard matches
-    html += `<section class="card">
-      <div class="section-label sparkle">Moodboard matches</div>`;
-    if (vendors.length === 0) {
-      html += `<div class="empty">No matches came back. Try adding another moodboard image or more detail in the description.</div>`;
-    } else {
-      html += vendors.map(v => `
-        <div class="vendor-row">
-          <div>
-            <div class="vendor-name">${escapeHtml(v.vendor || v.name || 'Unknown vendor')}</div>
-            <div class="vendor-meta">${escapeHtml([v.reason, v.tags && v.tags.join(' · '), v.products_count && `${v.products_count} products`].filter(Boolean).join(' · '))}</div>
-          </div>
-          ${v.score != null ? `<div class="score-pill">match ${Math.round(v.score)}</div>` : ''}
-        </div>
-      `).join('');
-    }
-    html += `</section>`;
+    html += `
+      <p style="font-size:11px;color:#d1d5db;text-align:center;margin-top:20px">
+        ${new Date(data.generated_at || Date.now()).toLocaleString()}
+      </p>
+    `;
 
-    // Secondary: buyer history (only if email was provided)
-    if (buyerEmail) {
-      html += `<section class="card">
-        <div class="section-label sparkle">Previously loved</div>`;
-      if (history.length === 0) {
-        html += `<div class="empty">No previous order history found for ${escapeHtml(buyerEmail)}.</div>`;
-      } else {
-        html += `<div class="history-grid">` + history.map(h => `
-          <div class="history-card">
-            <div class="name">${escapeHtml(h.vendor || 'Unknown vendor')}</div>
-            <div class="kv"><span>Orders</span><strong>${h.order_count ?? '—'}</strong></div>
-            <div class="kv"><span>Last ordered</span><strong>${formatDate(h.last_ordered_at)}</strong></div>
-            <div class="kv"><span>Total spend</span><strong>${formatGbp(h.total_spend_gbp)}</strong></div>
-          </div>
-        `).join('') + `</div>`;
-      }
-      html += `</section>`;
-    }
-
-    resultsEl.innerHTML = html;
+    content.innerHTML = html;
   }
 
-  function escapeHtml(s) {
+  function esc(s) {
     if (s == null) return '';
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
+
   function formatDate(d) {
     if (!d) return '—';
     try {
