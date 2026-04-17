@@ -677,7 +677,7 @@
     content.innerHTML     = '';
     results.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    const imageUrls = [
+    const images = [
       ...uploadedImages.map(img => img.dataUrl),
       ...urlImages
     ].slice(0, 8);
@@ -686,7 +686,7 @@
       const res = await fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageUrls, description, buyerName, buyerEmail, maxVendors })
+        body: JSON.stringify({ images, description, buyerName, buyerEmail, maxVendors })
       });
       if (!res.ok) throw new Error(`Error ${res.status} — check n8n workflow is active`);
       const data = await res.json();
